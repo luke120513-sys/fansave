@@ -81,6 +81,7 @@ nav button.on{color:var(--g);font-weight:700}
 .ddrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.dd{border:1.5px solid #E9C9A9;background:#FFFDF9;color:#7C2D12;border-radius:999px;padding:7px 14px;font-size:14px;font-weight:700;cursor:pointer}.dd span{font-size:11px;opacity:.7}html.dark .dd{background:#2A211B;border-color:#5A3F2C;color:#F5C9A6}
 .pick{display:flex;flex-direction:column;gap:6px;margin-top:6px}.pick button{display:flex;justify-content:space-between;align-items:center;padding:13px 14px;border-radius:12px;border:1px solid #F0DCC6;background:#FFFDF9;font-size:15px;color:inherit;cursor:pointer;text-align:left}.pick button.on{border-color:#C2410C;background:#FFF1E3;font-weight:800}.pick b{color:#C2410C}html.dark .pick button{background:#2A211B;border-color:#4A3626}html.dark .pick button.on{background:#3A2418;border-color:#F0875A}html.dark .pick b{color:#F0875A}
 .sth{display:flex;align-items:center;gap:12px}.stn{font-size:17px;font-weight:800;line-height:1.3;min-width:0}.sti{flex:none;width:44px;height:44px;border-radius:14px;background:#FBEADB;display:flex;align-items:center;justify-content:center}.sti svg{width:24px;height:24px;fill:none;stroke:#C2410C;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}html.dark .sti{background:#3A2418}html.dark .sti svg{stroke:#F0875A}
+.cmp .cmr{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid #EADFD3;border-radius:12px;margin-top:6px;text-decoration:none;color:inherit;font-weight:700}.cmp .cmr em{font-style:normal;color:var(--g);font-weight:800}.cmp .cmr small{font-weight:400;color:#8A7766}html.dark .cmp .cmr{border-color:#4A3A30}.abrow{display:flex;gap:10px;padding:8px 0;border-top:1px solid #EFE6DC;text-decoration:none;color:inherit}.abrow img{width:84px;height:84px;object-fit:cover;border-radius:10px;flex:none}.abt{display:flex;flex-direction:column;gap:2px;min-width:0}.abt b{font-size:14px;line-height:1.3}.abt small{color:#8A7766;font-size:12px}.abp{font-weight:800;color:#7C2D12}html.dark .abrow{border-color:#3A2E26}html.dark .abp{color:#F5C9A6}.sfoot{margin-top:18px}.sprow{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap}.sponsor{display:inline-flex;align-items:center;justify-content:center;height:36px;box-sizing:border-box;padding:0 14px;border:1.5px solid var(--g);border-radius:18px;color:var(--g);background:transparent;font:inherit;font-size:13.5px;font-weight:700;text-decoration:none;cursor:pointer;white-space:nowrap}.sponsor:active{transform:scale(.94)}a.flyl{color:#388153!important;font-weight:800}html.dark a.flyl{color:#6EDC9A!important}
 .ptag{display:inline-block;vertical-align:2px;font-size:11px;font-weight:700;padding:1px 7px;border-radius:8px;background:#F3E8DC;color:#8A5A3C;margin-left:4px}html.dark .ptag{background:#3A2A20;color:#D9B99A}.vln{font-size:13px;font-weight:700;color:#7C2D12;margin:2px 0 4px;display:flex;flex-wrap:wrap;gap:4px 10px}.vln span{font-weight:400;color:#8A7766}html.dark .vln{color:#F5C9A6}
 .card{background:#FFFDF9;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .card .grp{font-size:11px;color:var(--grey)}
@@ -367,7 +368,35 @@ html.dark .back,html.dark .chip{color:#F5A27A;border-color:#E07A4A}html.dark .ch
 <script>
 var API='https://script.google.com/macros/s/AKfycbwh8DsqFRmJPOvblQ3tvegty3kELnV_L1cQE102NoZfBZIf3OR4Jaw_Y0B2BeqI15uh/exec'; // 部署時 deploy.sh 會填入
 var RELAY='https://fansave-api.luke120513.workers.dev';
-var CONTACT='aicode1911@gmail.com', SPONSOR_URL='https://portaly.cc/dreamworld369/support', VER='v2.6.5'; var MAIL='<a href="mailto:'+CONTACT+'" style="color:var(--accent,#C2410C);text-decoration:underline;font-weight:600">'+CONTACT+'</a>';
+var SPONSOR_URL='https://portaly.cc/dreamworld369/support',SITE_URL='https://luke120513-sys.github.io/fansave/',FLY_URL='https://luke120513-sys.github.io/flysave/';
+function pbV(n){var o=[];while(true){var b=n&127;n=Math.floor(n/128);if(n)o.push(b|128);else{o.push(b);return o;}}}
+function pbI(no,n){return pbV(no<<3).concat(pbV(n));}function pbF(no,a){return pbV(no<<3|2).concat(pbV(a.length),a);}
+function gTs(ci,co){var d=function(x){var a=x.split('-').map(Number);return pbI(1,a[0]).concat(pbI(2,a[1]),pbI(3,a[2]));},n=nights(ci,co),dates=pbF(1,d(ci)).concat(pbF(2,d(co)),pbI(3,n)),cur=[84,87,68];
+  var a=pbI(1,1).concat(pbF(2,pbF(1,pbI(1,3)).concat(pbF(1,pbI(1,3)),pbI(2,0))),pbF(3,pbF(1,pbF(3,[])).concat(pbF(2,pbF(2,dates)))),pbF(6,pbI(2,0)),pbF(5,pbF(1,pbF(7,cur)).concat(pbF(3,[]))));
+  return btoa(String.fromCharCode.apply(null,a)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function cmpLinks(name,city){var q=encodeURIComponent(name+' '+city),nn=nights(st.ci,st.co);return [
+  ['Agoda','https://www.agoda.com/zh-tw/search?textToSearch='+q+'&checkIn='+st.ci+'&los='+nn+'&adults='+st.g+'&rooms=1&currency=TWD'],
+  ['Booking.com','https://www.booking.com/searchresults.zh-tw.html?ss='+q+'&checkin='+st.ci+'&checkout='+st.co+'&group_adults='+st.g+'&no_rooms=1&selected_currency=TWD'],
+  ['Hotels.com','https://tw.hotels.com/Hotel-Search?destination='+q+'&startDate='+st.ci+'&endDate='+st.co+'&adults='+st.g],
+  ['Google 飯店（多站價格）','https://www.google.com/travel/search?q='+q+'&hl=zh-TW&gl=tw&curr=TWD&ts='+gTs(st.ci,st.co)]];}
+function abnbUrl(city){return 'https://www.airbnb.com.tw/s/'+encodeURIComponent(city)+'/homes?checkin='+st.ci+'&checkout='+st.co+'&adults='+st.g;}
+var ABNB={};function abnbLoad(){var k=[st.city,st.ci,st.co,st.g].join('|');if(ABNB[k])return ABNB[k];ABNB[k]={loading:1};
+  fetch(RELAY+'/airbnb?city='+encodeURIComponent(st.city)+'&checkin='+st.ci+'&checkout='+st.co+'&guests='+st.g).then(function(r){return r.json();}).then(function(j){ABNB[k]=j&&j.ok?j:{homes:[],err:1};if(tab==='search'&&R&&R.villa)render();}).catch(function(){ABNB[k]={homes:[],err:1};if(tab==='search'&&R&&R.villa)render();});return ABNB[k];}
+function abnbBox(){var A=abnbLoad(),nn=nights(st.ci,st.co),h='<div class="panel abnb"><p class="step">🏠 Airbnb 整棟房源</p>';
+  if(A.loading)return h+'<p class="note">⏳ 正在查 Airbnb…</p></div>';
+  var L=(A.homes||[]).slice(0,10);
+  if(!L.length)return h+'<p class="note">'+(A.err?'暫時查不到 Airbnb 的資料。':'Airbnb 這個條件目前沒有結果。')+'</p><a class="btn ghost" target="_blank" rel="noopener" href="'+esc(abnbUrl(st.city))+'" style="text-decoration:none;text-align:center">Airbnb 查看 ›</a></div>';
+  h+='<p class="note" style="margin:0 0 8px">Airbnb 公開搜尋結果（'+st.g+' 人以上可住的整棟／整間）・價格為 Airbnb 顯示的<b>稅前總價</b>，另有稅費以 Airbnb 為準。</p>';
+  h+=L.map(function(a){return '<a class="abrow" target="_blank" rel="noopener" href="'+esc(a.url)+'">'+(a.img?'<img loading="lazy" referrerpolicy="no-referrer" alt="" src="'+esc(a.img.replace(/\?.*$/,'')+'?im_w=320')+'" onerror="this.remove()">':'')+'<span class="abt"><b>'+esc(a.name)+'</b><small>'+[esc(a.type),a.beds?a.beds+' 房':'',a.rating?'⭐ '+a.rating+'（'+a.reviews+'）':''].filter(Boolean).join('・')+'</small><span class="abp">'+money(a.total)+' <small>'+nn+' 晚稅前・每晚 '+money(a.nightly)+(st.g>1?'・每人每晚 '+money(a.nightly/st.g):'')+'</small></span></span></a>';}).join('');
+  return h+'<a class="btn ghost" target="_blank" rel="noopener" href="'+esc(abnbUrl(st.city))+'" style="text-decoration:none;text-align:center;margin-top:8px">Airbnb 查看更多 ›</a></div>';}
+function shareSite(){var d={title:'飯省 FanSave',text:'找 CP 值最高的飯店・多站比價',url:SITE_URL};
+  var copy=function(){var line='https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(SITE_URL);var done=function(ok){sheet('<h2>🔗 分享飯省</h2>'+(ok?'<p class="note">已複製網址：</p>':'<p class="note">網址：</p>')+'<p style="word-break:break-all;font-weight:700">'+SITE_URL+'</p><div class="lk"><a target="_blank" rel="noopener" href="'+line+'">用 LINE 分享</a></div>');};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(SITE_URL).then(function(){done(1);},function(){done(0);});else done(0);};
+  if(navigator.share)navigator.share(d).catch(function(e){if(!e||e.name!=='AbortError')copy();});else copy();}
+function siteFoot(){var fu=st.city&&st.ci&&st.co&&(tab==='search'&&st.step==='result')?flyUrl(st):FLY_URL+'?from=fansave';
+  return '<div class="sprow"><a class="sponsor" href="'+SPONSOR_URL+'" target="_blank" rel="noopener">☕ 贊助飯省</a><button type="button" class="sponsor" data-act="share">🔗 分享飯省</button></div>'+
+   '<p class="note" style="text-align:center;margin:8px 0 0"><a href="#" data-act="go:about">關於我們</a>｜<a href="#" data-act="go:privacy">隱私權政策</a>｜<a href="#" data-act="go:terms">服務條款</a>｜<a class="flyl" href="'+esc(fu)+'" target="_blank" rel="noopener">✈️ 飛省 查機票</a><br>© 2026 飯省 FanSave・'+VER+'</p>';}
+var CONTACT='aicode1911@gmail.com', SPONSOR_URL='https://portaly.cc/dreamworld369/support', VER='v2.7.0'; var MAIL='<a href="mailto:'+CONTACT+'" style="color:var(--accent,#C2410C);text-decoration:underline;font-weight:600">'+CONTACT+'</a>';
 function $(i){return document.getElementById(i);}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function lsg(k,d){k=k.replace(/^fs_/,'fan_');try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
@@ -502,12 +531,13 @@ function results(){
   if(st.near)h+='<div class="apc" style="margin:-4px 0 10px">'+(NG?'<span>📍 '+esc(st.near)+' 半徑 '+(st.r||3)+' km・'+list.length+' 間</span>':'<span>📍 找不到「'+esc(st.near)+'」的位置，先顯示全部</span>')+'</div>';
   if(NG&&!list.length){var nx=[3,5,10,20].filter(function(k){return k>(st.r||3);});return h+'<div class="empty">半徑 '+(st.r||3)+' km 內沒有找到飯店（這次共查到 '+nearAll+' 間，都比較遠）。<div class="chips" style="justify-content:center;margin-top:10px">'+nx.map(function(k){return chip('擴大到 '+k+' km','rad:'+k);}).join('')+chip('不限距離','nearx')+'</div></div>';}
   if(LUXN)h+='<p class="note" style="margin:-4px 2px 10px">💎 '+LUXN+'</p>';if(AFH||AFX)h+='<p class="note" style="margin:-4px 2px 10px">🎛️ '+[AFH?AFH+' 間查不到所選設施的資料（不確定有沒有）':'',AFX?AFX+' 間確定沒有':''].filter(Boolean).join('、')+'，已先隱藏。</p>';if(CAPX||CAPU)h+='<p class="note" style="margin:-4px 2px 10px">👥 '+[CAPX?'已隱藏 '+CAPX+' 間住不下 '+st.g+' 人':'',CAPU?CAPU+' 間人數未知（排在後面）':''].filter(Boolean).join('、')+'。</p>';
-  if(!list.length&&R.villa)return h+'<div class="empty">這個城市目前查不到包棟／Villa 的房源，可以換個城市或切回「🏨 飯店」。</div>';
+  if(!list.length&&R.villa)return h+'<div class="empty">Trip.com 這個城市目前查不到包棟／Villa 的房源，可以看看下面的 Airbnb，或切回「🏨 飯店」。</div>'+abnbBox();
   if(!list.length&&(st.af||[]).length)return h+'<div class="empty">沒有符合所選設施的住宿，試著減少篩選條件。<div class="chips" style="justify-content:center;margin-top:10px">'+chip('清除篩選','afclr2')+'</div></div>';
   if(!list.length)return h+'<div class="empty">'+((R.hotels||[]).length?'預算內沒有飯店，試試「不限預算」。':'目前查不到「'+esc(st.city)+'」的房價，請換個城市或稍後再試。')+'</div>';
   var saved=MYQ.some(function(q){return q.city===st.city&&q.ci===st.ci&&q.co===st.co&&q.g===st.g;});
   h+=list.map(function(x,i){return '<div class="card hc" data-act="hd:'+i+'">'+(pics(x).length?'<div class="hero"><img loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="" src="'+esc(pics(x)[0])+'" onerror="this.parentNode.style.display=\'none\'">'+(pics(x).length>1?'<span class="pn">📷 '+pics(x).length+'</span>':'')+'</div>':'')+'<h3>'+esc(x.name)+(ptype(x)&&!R.villa?' <span class="ptag">'+ptype(x)+'</span>':'')+'</h3>'+(R.villa?'<div class="vln">🏡 '+[x.cap?'可住 '+x.cap+' 人':'人數未知',x.beds?x.beds+' 房':'',/private pool|private villa pool|私人泳池/i.test(amText(x))?'私人泳池':''].filter(Boolean).join('・')+(st.g>1?'<span>每人每晚約 '+money(Math.round(x.price/st.g))+'</span>':'')+'</div>':'')+(st.sort==='pop'&&x.rating?'<div data-act="rv:'+i+'" style="font-size:15px;font-weight:800;color:var(--accent,#C2410C);margin:2px 0 4px;cursor:pointer">'+(i===0?'🏆 ':'👍 ')+(x.reviews||0).toLocaleString()+' 人評論・'+x.rating.toFixed(1)+'</div>':'')+'<div class="mt">'+(x.rating?'<span class="rt" data-act="rv:'+i+'">'+x.rating.toFixed(1)+'</span>'+(st.sort==='pop'?'':'<span data-act="rv:'+i+'" style="text-decoration:underline dotted;cursor:pointer">'+(x.reviews||0).toLocaleString()+' 則評論 ›</span>')+(x.reviews<100?'<span style="color:var(--tip)">・評論較少</span>':''):'<span>尚無評分</span>')+(x.stars?'<span>'+'★'.repeat(x.stars)+'</span>':'')+'</div>'+(x.nearKm!=null?'<div class="mt" style="margin-top:4px;color:var(--accent,#C2410C);font-weight:700"><span>📍 距 '+esc(st.near)+' '+x.nearKm+' km</span></div>':'')+(x.stationM!=null?'<div class="mt" style="margin-top:4px"><span>'+walkTxt(x)+'</span><span>・'+esc(stName(x.station))+'</span>'+(x.centerKm!=null?'<span>・離市中心 '+x.centerKm+' km</span>':'')+'</div>':'')+
     apChips(x,3)+'<div class="pr"><div><b>'+money(x.price)+'</b><small>每晚・'+nn+' 晚共 '+money(x.price*nn)+'</small></div><a class="btn" target="_blank" rel="noopener" href="'+esc(bookUrl(x))+'" data-stop="1" data-pb="'+i+'">訂房 ›</a></div></div>';}).join('');
+  if(R.villa)h+=abnbBox();
   return h+'<button class="btn ghost" data-act="savq"'+(saved?' disabled':'')+'>'+(saved?'✓ 已存到「我的查詢」・降價會通知你':'🔔 存下這個查詢，降價通知我')+'</button>';
 }
 function bookUrl(x){return x.url||('https://tw.trip.com/hotels/list?keyword='+encodeURIComponent(x.name)+'&checkin='+st.ci+'&checkout='+st.co+'&adult='+st.g);}
@@ -534,7 +564,10 @@ function hotelSheet(i){var x=VIEW[i],nn=nights(st.ci,st.co),q=encodeURIComponent
   var ps=pics(x);sheet((ps.length?'<div class="gal">'+ps.map(function(u){return '<img loading="lazy" referrerpolicy="no-referrer" alt="" src="'+esc(u.replace(/_R_600_600/,'_R_960_660'))+'" onerror="this.remove()">';}).join('')+'</div>':'')+'<h2>'+esc(x.name)+'</h2><div class="mt" style="font-size:13px;color:#8A7766">'+(x.stars?'★'.repeat(x.stars)+'・':'')+esc(x.area||st.city)+'</div>'+apChips(x)+(x.ugc?'<p class="ugc">「'+esc(x.ugc)+'」<small>— Trip.com 住客評論摘要</small></p>':'')+(x.sub&&Object.keys(x.sub).length?'<div class="apc">'+Object.keys(x.sub).map(function(k){return '<span style="background:none">'+({Cleanliness:'清潔',Amenities:'設施',Location:'位置',Service:'服務',Room:'客房',Rooms:'客房'}[k]||esc(k))+' <b>'+x.sub[k]+'</b></span>';}).join('')+'</div>':'')+
    mapBox(x.name,x.area||st.city,x.station,x.stationM,x.walkMin)+'<dl class="kv">'+(x.centerKm!=null?'<dt>離市中心</dt><dd>'+x.centerKm+' km</dd>':'')+'<dt>評分</dt><dd>'+x.rating+' / 10（'+(x.reviews||0).toLocaleString()+' 則）</dd><dt>每晚</dt><dd>'+money(x.price)+'</dd><dt>'+nn+' 晚合計</dt><dd>'+money(x.price*nn)+'</dd><dt>推薦分數</dt><dd>'+x.cp+'</dd><dt>日期</dt><dd>'+md(st.ci)+'（'+wd(st.ci)+'）→ '+md(st.co)+'（'+wd(st.co)+'）・'+st.g+' 人</dd></dl>'+
    '<a class="btn" target="_blank" rel="noopener" href="'+esc(bookUrl(x))+'" style="text-decoration:none;text-align:center">前往訂房 ›</a>'+
-   '<div class="lk"><a target="_blank" rel="noopener" href="https://www.booking.com/searchresults.zh-tw.html?ss='+q+'&checkin='+st.ci+'&checkout='+st.co+'&group_adults='+st.g+'">比價：Booking.com</a><a target="_blank" rel="noopener" href="https://www.agoda.com/zh-tw/search?textToSearch='+q+'&checkIn='+st.ci+'&los='+nn+'&adults='+st.g+'">比價：Agoda</a>'+
+   '<div class="cmp"><p class="step" style="margin:14px 0 6px">💱 多站比價・'+md(st.ci)+'→'+md(st.co)+'・'+st.g+' 人</p><div class="cmr"><span>Trip.com</span><b>'+money(x.price)+'<small> /晚</small></b></div>'+
+   cmpLinks(x.name,st.city).map(function(c){return '<a class="cmr" target="_blank" rel="noopener" href="'+esc(c[1])+'"><span>'+c[0]+'</span><em>查價 ›</em></a>';}).join('')+(R&&R.villa?'<a class="cmr" target="_blank" rel="noopener" href="'+esc(abnbUrl(st.city))+'"><span>Airbnb</span><em>查看 ›</em></a>':'')+
+   '<p class="note" style="margin:6px 2px 0">其他網站的價格目前無法自動取得（會擋自動查詢），點「查價」會帶入同樣日期與人數，請在該網站確認。</p></div>'+
+   '<div class="lk">'+
    '<button data-act="booked:'+i+'">🧳 我訂了這間，加到「我的住宿」</button></div><p class="note" style="margin-top:12px">價格以訂房網站顯示為準。</p>');}
 
 /* ---------- 我的查詢（照飛省：每台裝置一份，存在伺服器） ---------- */
@@ -700,7 +733,7 @@ var C2I={};Object.keys(IATA).forEach(function(k){var c=IATA[k].toLowerCase();if(
 var ZH2EN={'東京':'tokyo','大阪':'osaka','福岡':'fukuoka','札幌':'sapporo','沖繩':'okinawa','名古屋':'nagoya','首爾':'seoul','釜山':'busan','曼谷':'bangkok','香港':'hong kong','新加坡':'singapore','吉隆坡':'kuala lumpur','馬尼拉':'manila','胡志明市':'ho chi minh city','河內':'hanoi','峇里島':'bali','巴黎':'paris','倫敦':'london','紐約':'new york','京都':'osaka','神戶':'kobe','高雄':'kaohsiung','台北':'taipei','臺北':'taipei','澳門':'macau','峴港':'da nang','濟州':'jeju'};
 var FROMFLY=false;
 function flyUrl(s){var c=String(s.city||'').trim(),k=c.toLowerCase(),to=/^[A-Z]{3}$/.test(c)?c:C2I[k]||C2I[ZH2EN[c]||'']||c;
-  return 'https://luke120513-sys.github.io/flysave/?'+(to?'to='+encodeURIComponent(to)+'&':'')+'dep='+s.ci+'&ret='+s.co+'&pax='+(s.g||2)+'&from=fansave';}
+  return 'https://luke120513-sys.github.io/flysave/?'+(to?'to='+encodeURIComponent(to)+'&':'')+'dep='+s.ci+'&ret='+s.co+'&pax='+Math.min(9,s.g||2)+'&orig=TPE&from=fansave';}
 function fromQuery(){var q=new URLSearchParams(location.search),c=(q.get('city')||'').trim(),nr=(q.get('near')||'').trim().slice(0,60);if(!c&&!nr)return;if(nr){st.near=nr;st.r=[1,3,5,10,20].indexOf(+q.get('r'))>=0?+q.get('r'):3;st.geo=null;st.sort='dist';}else{st.near='';st.geo=null;}
   var u=c.toUpperCase(),ci=q.get('in'),co=q.get('out'),g=+q.get('guests')||2,re=/^\d{4}-\d{2}-\d{2}$/;
   st.city=c?(IATA[u]||c):'';if(c&&!IATA[u]&&/^[A-Z]{3}$/.test(c)){history.replaceState(null,'',location.pathname);st.city='';st.step='dest';setTimeout(function(){toast('看不懂代碼「'+c+'」，請輸入城市名稱');},800);return;}if(re.test(ci||'')&&ci>today())st.ci=ci;else st.ci=addDays(today(),14);
@@ -722,7 +755,7 @@ function privacy(){return page('🔒 隱私權政策','<p class="note">最後更
  '<h3>2. 我們蒐集哪些資料</h3><ul><li><b>不需要註冊或登入</b>，我們不蒐集姓名、電話、Email、身分證或付款資料。</li><li><b>匿名裝置代碼</b>：第一次使用時在你的瀏覽器隨機產生，用來讓每台裝置只看到自己的資料，不含可識別身分的資訊。</li><li><b>搜尋條件</b>：城市、入住／退房日期、人數、預算。你按「存下這個查詢」時，會和匿名裝置代碼一起存到伺服器。</li><li><b>通知訂閱</b>：開啟系統通知時，瀏覽器會產生一組推播訂閱資訊（推播服務網址與加密金鑰），我們存下它用來傳送通知。</li><li><b>我訂購的飯店</b>：你輸入的飯店名稱、日期、確認號碼、房型、價格、取消期限、電話與貼上的確認信文字，<b>只存在你的裝置</b>（localStorage）。為了入住提醒，只有飯店名稱與入住／退房日期和時間會送到伺服器；為了補上飯店資料，飯店名稱與城市會送到我們的資料中繼服務查詢。確認信全文不會上傳。</li><li><b>技術紀錄</b>：服務供應商可能自動記錄 IP 位址、瀏覽器類型與存取時間，用於安全與除錯。</li></ul>'+
  '<h3>2-1. 訂房截圖</h3><p>「📷 用截圖新增」的圖片<b>只在你的裝置上辨識</b>（Tesseract.js），不會上傳到我們或任何伺服器，也不會儲存。辨識程式與語言模型會從 jsDelivr 公開 CDN 下載。辨識出的文字只用來填入表單，存檔後與其他住宿資料一樣存在你的裝置（並同步你的住宿提醒）。</p><h3>3. 使用目的</h3><p>只用於提供飯店價格查詢、降價與入住提醒、改善服務。<b>不出售、不出租</b>，也不提供給第三方做行銷，不用於廣告追蹤。</p>'+
  '<h3>4. 處理資料的服務商</h3><ul><li><b>Google（Apps Script）</b>：儲存匿名裝置代碼、存下的查詢、通知訂閱與通知紀錄。</li><li><b>Cloudflare（Workers）</b>：查詢公開飯店價格與飯店資料、傳送推播通知。</li><li><b>瀏覽器推播服務</b>（Google FCM、Apple、Mozilla 等，依你的瀏覽器而定）：遞送系統通知。</li><li><b>GitHub Pages</b>：提供網站本身。</li></ul><p>這些服務商可能在台灣以外的地區處理資料。</p>'+
- '<h3>5. 第三方網站</h3><p>價格與飯店資料來自 Trip.com、Google 等公開頁面。點「訂房」、「比價」或「地圖」會前往 Trip.com、Booking.com、Agoda、Google 地圖等網站，這些網站有自己的隱私權政策與 Cookie，請另行參閱。你在那些網站的訂房與付款資料，我們看不到也不會蒐集。</p>'+
+ '<h3>5. 第三方網站</h3><p>前往姊妹服務<a href="https://luke120513-sys.github.io/flysave/" target="_blank" rel="noopener">飛省 FlySave</a>時，只會用網址帶入目的地、日期與人數，不分享個人資料；兩邊的本機資料各自獨立（fan_／fly_）。價格與飯店資料來自 Trip.com、Google 等公開頁面。點「訂房」、「比價」或「地圖」會前往 Trip.com、Booking.com、Agoda、Google 地圖等網站，這些網站有自己的隱私權政策與 Cookie，請另行參閱。你在那些網站的訂房與付款資料，我們看不到也不會蒐集。</p>'+
  '<h3>6. Cookie 與本機儲存</h3><p>本服務不使用廣告或追蹤 Cookie，只用瀏覽器本機儲存（localStorage、Service Worker 快取）保存你的設定、我訂購的飯店與離線用的網頁檔案。</p>'+
  '<h3>7. 付款</h3><p>本服務目前完全免費，不經手任何付款。「贊助」按鈕會前往第三方贊助平台，付款由該平台處理。日後若推出付費方案，會先更新本政策並說明付款服務商。</p>'+
  '<h3>8. 保存期間與刪除</h3><ul><li>存下的查詢：你可以在「我的查詢」隨時刪除；入住日過後不再檢查。</li><li>通知訂閱：在「通知設定」關閉即刪除；推播服務回報失效時也會自動刪除。</li><li>通知紀錄：最多保留最近 30 則，可隨時清除。</li><li>本機資料：清除瀏覽器資料即全部移除。</li></ul><p>也可以來信要求刪除與你的匿名裝置代碼相關的所有資料。</p>'+
@@ -738,7 +771,8 @@ function terms(){return page('📄 服務條款','<p class="note">最後更新�
  '<h3>6. 使用規範</h3><p>請勿以自動化程式大量存取、干擾、破解或濫用本服務，或用於任何違法用途。</p>'+
  '<h3>7. 責任限制</h3><p>在法律允許範圍內，本服務對因使用或無法使用本服務、資訊錯誤或第三方網站所生之損失不負賠償責任。</p>'+
  '<h3>8. 服務變更</h3><p>本服務可能隨時調整內容、暫停或終止，條款更新會公布在本頁。繼續使用即表示同意更新後的條款。</p>'+
- '<h3>9. 準據法</h3><p>本條款以中華民國法律為準據法，如有爭議，以臺灣臺北地方法院為第一審管轄法院。</p><p>聯絡我們：'+MAIL+'</p>');}
+ '<h3>9. 姊妹服務：飛省 FlySave</h3><p><a href="https://luke120513-sys.github.io/flysave/" target="_blank" rel="noopener">飛省 FlySave（機票 CP 值查詢）</a>與本服務是同一經營者提供的姊妹服務。兩者之間的「✈️ 飛省 查機票」／「🏨 查飯店」跳轉，只會透過網址帶入目的地、日期與人數，不會傳送任何個人資料。兩個服務各自在你的裝置上保存自己的資料（飯省用 fan_ 開頭、飛省用 fly_ 開頭），互不讀取；使用飛省時適用飛省自己的條款與隱私權政策。</p>'+
+ '<h3>10. 準據法</h3><p>本條款以中華民國法律為準據法，如有爭議，以臺灣臺北地方法院為第一審管轄法院。</p><p>聯絡我們：'+MAIL+'</p>');}
 
 /* ---------- 公告輪播（內容在後端，可隨時修改） ---------- */
 var AI=0,AT=null,APAUSE=false;
@@ -758,7 +792,7 @@ function render(){
   document.querySelectorAll('nav button').forEach(function(b){b.classList.toggle('on',b.dataset.tab===(SUBS.indexOf(tab)>=0?'more':tab));});
   var h=tab==='mine'?mine():tab==='stays'?stays():tab==='alerts'?alertsView():tab==='more'?moreView():tab==='about'?about():tab==='privacy'?privacy():tab==='terms'?terms():tab==='help'?help():tab==='plan'?plan():tab==='notifset'?notifyPanel():search();
   if(SUBS.indexOf(tab)>=0)h='<button class="back" data-act="tab:more">‹ 其他</button>'+h;
-  h+='<p class="note" style="text-align:center;margin:18px 0 0">'+'<a href="#" data-act="go:privacy">隱私權政策</a>｜<a href="#" data-act="go:terms">服務條款</a><br>© 2026 飯省 FanSave・'+VER+'</p>';
+  h+='<div class="sfoot">'+siteFoot()+'</div>';
   var m=$('main'),tabChg=LAST_TAB!==tab,stepChg=LAST_STEP!==st.step;
   var fq=document.activeElement&&document.activeElement.id==='dest';
   m.innerHTML=h;
@@ -788,6 +822,7 @@ document.addEventListener('click',function(e){
   if(k==='rad'){st.r=+x;st.nearOpen=1;saveSt();render();return;}
   if(k==='nearx'){st.near='';st.geo=null;if(st.sort==='dist')st.sort='pop';saveSt();render();return;}
   if(k==='rv')return revSheet(+x);
+  if(k==='share')return shareSite();
   if(k==='tab'){tab=x;if(x==='search'&&!R)st.step=st.city?'cal':'dest';render();return;}
   if(k==='go'){tab=x;closeSheet(true);render();return;}
   if(k==='city')return go('city',x);
