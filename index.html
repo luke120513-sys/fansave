@@ -379,9 +379,10 @@ function cmpLinks(name,city){var q=encodeURIComponent(name+' '+city),nn=nights(s
   ['Booking.com','https://www.booking.com/searchresults.zh-tw.html?ss='+q+'&checkin='+st.ci+'&checkout='+st.co+'&group_adults='+st.g+'&no_rooms=1&selected_currency=TWD'],
   ['Hotels.com','https://tw.hotels.com/Hotel-Search?destination='+q+'&startDate='+st.ci+'&endDate='+st.co+'&adults='+st.g],
   ['Google 飯店（多站價格）','https://www.google.com/travel/search?q='+q+'&hl=zh-TW&gl=tw&curr=TWD&ts='+gTs(st.ci,st.co)]];}
-function abnbUrl(city){return 'https://www.airbnb.com.tw/s/'+encodeURIComponent(city)+'/homes?checkin='+st.ci+'&checkout='+st.co+'&adults='+st.g;}
+function abCity(c){c=String(c||'').trim();var e=ZH2EN[c]||({'宿霧':'cebu','宿务':'cebu','普吉島':'phuket','長灘島':'boracay','薄荷島':'bohol'})[c]||c;return e;}
+function abnbUrl(city){return 'https://www.airbnb.com.tw/s/'+encodeURIComponent(abCity(city))+'/homes?checkin='+st.ci+'&checkout='+st.co+'&adults='+st.g;}
 var ABNB={};function abnbLoad(){var k=[st.city,st.ci,st.co,st.g].join('|');if(ABNB[k])return ABNB[k];ABNB[k]={loading:1};
-  fetch(RELAY+'/airbnb?city='+encodeURIComponent(st.city)+'&checkin='+st.ci+'&checkout='+st.co+'&guests='+st.g).then(function(r){return r.json();}).then(function(j){ABNB[k]=j&&j.ok?j:{homes:[],err:1};if(tab==='search'&&R&&R.villa)render();}).catch(function(){ABNB[k]={homes:[],err:1};if(tab==='search'&&R&&R.villa)render();});return ABNB[k];}
+  fetch(RELAY+'/airbnb?city='+encodeURIComponent(abCity(st.city))+'&checkin='+st.ci+'&checkout='+st.co+'&guests='+st.g).then(function(r){return r.json();}).then(function(j){ABNB[k]=j&&j.ok?j:{homes:[],err:1};if(tab==='search'&&R&&R.villa)render();}).catch(function(){ABNB[k]={homes:[],err:1};if(tab==='search'&&R&&R.villa)render();});return ABNB[k];}
 function abnbBox(){var A=abnbLoad(),nn=nights(st.ci,st.co),h='<div class="panel abnb"><p class="step">🏠 Airbnb 整棟房源</p>';
   if(A.loading)return h+'<p class="note">⏳ 正在查 Airbnb…</p></div>';
   var L=(A.homes||[]).slice(0,10);
