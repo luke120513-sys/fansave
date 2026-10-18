@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFF8EF">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="飯省">
+<meta name="description" content="飯省 FanSave：輸入城市和日期，找 CP 值最高的飯店，降價用系統通知提醒你。">
+<title>飯省 FanSave</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<script>/* 主題：首繪前套用（跟隨系統／淺色／深色，記在 localStorage） */(function(){var m;try{m=localStorage.getItem('fan_theme')||'auto';m=m.replace(/"/g,'');}catch(e){m='auto';}window.THEME=m;window.themeApply=function(){var mq=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)'),d=THEME==='dark'||(THEME==='auto'&&mq&&mq.matches);document.documentElement.classList.toggle('dark',!!d);var t=document.querySelector('meta[name=theme-color]');if(t)t.setAttribute('content',d?'#241A14':'#FFF8EF');};themeApply();try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){if(THEME==='auto')themeApply();});}catch(e){}})();</script>
+<script>if("serviceWorker" in navigator)addEventListener("load",function(){navigator.serviceWorker.register("sw.js",{scope:"./"});});</script>
+<style>
+.annb{display:flex;align-items:center;gap:8px;background:#EAF7FF;border:1px solid #BFE3FA;border-radius:14px;margin:0 0 10px;padding:4px 4px 4px 12px}
+.annb.imp{background:var(--tipbg);border-color:#F3C58C}
+.annb .ao{flex:1;min-height:44px;border:0;background:none;text-align:left;font-family:inherit;font-size:14px;color:#222;padding:4px 0;display:flex;flex-direction:column;justify-content:center}
+.annb .ao span{font-size:12px;color:#666;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.annb .ax{width:44px;height:44px;border:0;background:none;font-size:20px;color:#888;font-family:inherit}
+.actabs{display:flex;gap:6px;overflow-x:auto;margin-top:8px}.actab{position:relative;flex:none;min-height:40px;padding:6px 12px;border:1px solid #d7dee6;border-radius:20px;background:#FFFDF9;font-family:inherit;font-size:14px;color:#333}.actab.on{background:var(--g);border-color:var(--g);color:#fff}.actab small{opacity:.7}.adot{position:absolute;top:2px;right:4px;width:8px;height:8px;border-radius:50%;background:#E53935}.chip .adot{position:relative;display:inline-block;top:-6px;right:-2px}.acb{display:inline-block;font-size:12px;font-weight:600;border-radius:8px;padding:2px 8px}
+.annc{background:#FFFDF9;border-radius:14px;padding:14px;margin:0 0 10px;box-shadow:0 1px 3px rgba(0,0,0,.06);border-left:4px solid #BFE3FA}
+.annc.imp{border-left-color:var(--tip)}.annc.hl{outline:2px solid var(--g)}
+.annc h3{margin:0 0 4px;font-size:16px}.annc .ad{font-size:12px;color:var(--grey);margin-bottom:6px}
+.annc p{margin:0;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.annc .links{margin-top:10px}.ntag{display:inline-block;background:#E53935;color:#fff;font-size:11px;border-radius:8px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+nav button{position:relative}.udot{position:absolute;top:6px;left:calc(50% + 8px);width:8px;height:8px;border-radius:50%;background:#E53935}
+.mopt em.cnt{display:inline-block;width:auto;font-style:normal;vertical-align:2px;margin-left:6px;background:#E53935;color:#fff;font-size:12px;font-weight:800;border-radius:10px;padding:1px 7px;margin-right:6px}
+:root{--g:#C2410C;--lg:#FDE6D3;--grey:#999;--tip:#C25E00;--tipbg:#FFF1DE}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;background:#FBF5EC;color:#111;padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+header{background:var(--g);color:#fff;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
+#annbell{position:relative;width:44px;height:44px;margin:-6px -4px -6px -8px;border:0;background:rgba(255,255,255,.16);border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+#annbell svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+#annn{position:absolute;top:2px;right:0;min-width:18px;height:18px;border-radius:9px;background:#E53935;color:#fff;font-size:11px;line-height:18px;text-align:center;padding:0 4px;box-sizing:border-box;display:none;border:1.5px solid var(--g)}
+#annn.on{display:block}
+#nfybell{position:relative;width:44px;height:44px;margin:-6px -8px -6px auto;border:0;background:#FFFDF9;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}
+#nfybell svg{width:24px;height:24px;fill:var(--g);stroke:var(--g);stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+#nfybell.on{box-shadow:0 0 0 3px rgba(255,255,255,.55)}
+#nfyn{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:#E53935;color:#fff;font-size:11px;line-height:18px;text-align:center;padding:0 4px;box-sizing:border-box;display:none;border:1.5px solid var(--g)}
+#nfyn.on{display:block}
+header h1{min-width:0;flex:1 1 auto;overflow:hidden}header small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:360px){header{gap:6px;padding-left:12px;padding-right:12px}header img{width:28px;height:28px}header h1{font-size:16px}}
+header img{width:34px;height:34px;border-radius:50%;background:#FFFDF9}
+#annbell{position:relative;width:40px;height:40px;margin:-6px 0 -6px -8px;border:0;background:#FDE6D3;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}#annbell svg{width:22px;height:22px;fill:none;stroke:#9A3412;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}html.dark #annbell{background:#3A2418}html.dark #annbell svg{stroke:#F0875A}#annn{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:#E53935;color:#fff;font-size:11px;line-height:18px;text-align:center;padding:0 4px;box-sizing:border-box;display:none}#annn.on{display:block}#upd{display:block;transition:opacity .3s}html.dark #upd{color:#D9B99A}
+.tagr{display:block;position:relative;height:1.35em;overflow:hidden;cursor:pointer}.tagr .ti{position:absolute;left:0;right:0;top:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:transform .45s ease,opacity .45s ease}.tagr .ti.dn{transform:translateY(100%);opacity:0}.tagr .ti.up{transform:translateY(-100%);opacity:0}.tagr .ti.an::before{content:"📣 "}html.dark .tagr{color:#D9B99A}
+header h1{font-size:19px;margin:0;font-weight:800}
+header small{display:block;font-size:11px;opacity:.9;font-weight:400}
+main{padding:12px;max-width:520px;margin:0 auto}
+nav{position:fixed;bottom:0;left:0;right:0;background:#FFFDF9;border-top:1px solid #e3e3e3;display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav button{flex:1;border:0;background:none;padding:9px 0 8px;font-size:12px;color:#777;font-family:inherit}
+nav button b{display:block;font-size:20px;line-height:24px}
+nav button.on{color:var(--g);font-weight:700}
+.panel{background:#FFFDF9;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.step{font-size:13px;color:var(--grey);margin:0 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--g);color:var(--g);background:#FFFDF9;border-radius:20px;padding:7px 13px;font-size:14px;font-weight:700;font-family:inherit}
+.chip.on{background:var(--g);color:#fff}
+.sortc{margin:-4px 0 12px;align-items:center}.sortc span{font-size:13px;color:#666}.sortc .chip{padding:5px 11px;font-size:13px}
+.bagl{font-size:14px;font-weight:700;color:#333;margin:2px 0}.bagl.inc{color:#9A3412}.bagnote{font-size:12px;color:#777;margin:-6px 0 10px}
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin:4px 0 8px}
+.cal-head b{font-size:16px}
+.cal-head button{border:0;background:var(--lg);color:#9A3412;border-radius:12px;padding:5px 12px;font-size:13px;font-weight:700}
+.cal-head button:disabled{opacity:.3}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
+.grid .w{font-size:12px;color:var(--grey);padding:3px 0}
+.grid .d{height:38px;line-height:38px;border-radius:10px;font-size:15px;border:0;background:none;font-family:inherit;color:#111;padding:0}
+.grid .d:disabled{color:#ccc}
+.grid .d.in{background:var(--lg)}
+.grid .d.end{background:var(--g);color:#fff;font-weight:800}
+.sel{font-size:14px;margin:10px 0 0;color:#333}
+.btn{display:block;width:100%;border:0;background:var(--g);color:#fff;font-size:16px;font-weight:800;border-radius:24px;padding:12px;margin-top:12px;font-family:inherit}
+.pendc .btn{flex:1;margin-top:4px}.btn.ghost{background:transparent;color:var(--g);border:2px solid var(--g)}
+.btn:disabled{background:#EBC4AC}
+.summary{font-size:13px;color:#444;margin:4px 2px 10px;white-space:pre-line}
+.hero{position:relative;margin:-14px -14px 10px;height:170px;border-radius:16px 16px 0 0;overflow:hidden;background:linear-gradient(135deg,#F6E3CF,#EBC9A8)}.hero img{width:100%;height:100%;object-fit:cover;display:block}.hero .pn{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.5);color:#fff;font-size:11px;border-radius:10px;padding:2px 8px}html.dark .hero{background:linear-gradient(135deg,#3A2A20,#2A1F18)}
+.gal{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;margin:8px -4px 6px;padding:0 4px;-webkit-overflow-scrolling:touch}.gal img{flex:0 0 86%;height:200px;object-fit:cover;border-radius:14px;scroll-snap-align:center;background:#F6E3CF}html.dark .gal img{background:#3A2A20}
+.apc{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}.apc span{font-size:12px;padding:3px 9px;border-radius:999px;background:#FFF1E3;color:#9A3412;border:1px solid #F3D9BF}html.dark .apc span{background:#3A2A20;color:#F5C9A6;border-color:#5A3F2C}
+.ugc{font-size:13px;color:#8A7766;font-style:italic;margin:6px 0}html.dark .ugc{color:#C9AE95}
+.nearb{margin-top:10px}.nearb summary{cursor:pointer;font-size:14px;color:#9A3412;font-weight:700;padding:6px 2px;list-style:none}.nearb summary::-webkit-details-marker{display:none}.nearb[open] summary{margin-bottom:6px}html.dark .nearb summary{color:#F0875A}
+.ddrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.dd{border:1.5px solid #E9C9A9;background:#FFFDF9;color:#7C2D12;border-radius:999px;padding:7px 14px;font-size:14px;font-weight:700;cursor:pointer}.dd span{font-size:11px;opacity:.7}html.dark .dd{background:#2A211B;border-color:#5A3F2C;color:#F5C9A6}
+.pick{display:flex;flex-direction:column;gap:6px;margin-top:6px}.pick button{display:flex;justify-content:space-between;align-items:center;padding:13px 14px;border-radius:12px;border:1px solid #F0DCC6;background:#FFFDF9;font-size:15px;color:inherit;cursor:pointer;text-align:left}.pick button.on{border-color:#C2410C;background:#FFF1E3;font-weight:800}.pick b{color:#C2410C}html.dark .pick button{background:#2A211B;border-color:#4A3626}html.dark .pick button.on{background:#3A2418;border-color:#F0875A}html.dark .pick b{color:#F0875A}
+.sth{display:flex;align-items:center;gap:12px}.stn{font-size:17px;font-weight:800;line-height:1.3;min-width:0}.sti{flex:none;width:44px;height:44px;border-radius:14px;background:#FBEADB;display:flex;align-items:center;justify-content:center}.sti svg{width:24px;height:24px;fill:none;stroke:#C2410C;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}html.dark .sti{background:#3A2418}html.dark .sti svg{stroke:#F0875A}
+.ptag{display:inline-block;vertical-align:2px;font-size:11px;font-weight:700;padding:1px 7px;border-radius:8px;background:#F3E8DC;color:#8A5A3C;margin-left:4px}html.dark .ptag{background:#3A2A20;color:#D9B99A}.vln{font-size:13px;font-weight:700;color:#7C2D12;margin:2px 0 4px;display:flex;flex-wrap:wrap;gap:4px 10px}.vln span{font-weight:400;color:#8A7766}html.dark .vln{color:#F5C9A6}
+.card{background:#FFFDF9;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.card .grp{font-size:11px;color:var(--grey)}
+.card .dest{font-size:19px;font-weight:800;margin:2px 0}
+.card .org{font-size:12px;color:var(--grey)}
+.card .price{font-size:28px;font-weight:800;color:var(--g);margin:2px 0}
+.card .price small{font-size:15px}
+.card .taxl{font-size:11px;color:#888;margin:-2px 0 2px}
+.card .lhb{display:inline-block;background:var(--g);color:#fff;font-size:12px;font-weight:800;border-radius:10px;padding:2px 9px;margin:4px 0 2px}
+.card .lhs{font-size:14px;font-weight:800;color:#333;margin:4px 0 2px}
+.card .lhw{font-size:13px;font-weight:700;color:#E67E22;margin-top:3px}
+.card .info{font-size:14px;color:#666}
+.card .tip{background:var(--tipbg);color:var(--tip);font-size:12px;font-weight:700;border-radius:10px;padding:6px 8px;margin-top:6px}
+.card .meta{font-size:11px;color:var(--grey);margin-top:6px;line-height:1.6}
+.card .meta .alt{color:#555}
+.flform input,.flform select{padding:8px;border:1px solid #ccc;border-radius:8px;margin:3px 0;font-size:15px}
+.hint{color:#E65100;font-weight:600}
+.card .meta .seller{color:#E65100;font-weight:700;font-size:13px}
+.card .opt{border-top:1px solid #eee;margin-top:8px;padding-top:8px;font-size:13px}
+.card .opt .r{display:flex;justify-content:space-between;font-weight:700}
+.card .opt .r span:last-child{color:var(--g)}
+.links{display:flex;gap:8px;margin-top:10px}
+.links a{flex:1;text-align:center;border:2px solid var(--g);color:var(--g);border-radius:20px;padding:8px 0;font-size:14px;font-weight:800;text-decoration:none}
+.links.small a{font-size:12px;padding:4px 0;border-width:1.5px}
+.empty{text-align:center;color:#777;font-size:14px;padding:24px 10px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#333;color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;transition:.3s;pointer-events:none;z-index:9;max-width:90%}
+.toast.on{opacity:.95}
+.help h3{font-size:16px;margin:4px 0 6px}
+.help p,.help li{font-size:14px;line-height:1.7;color:#333}
+.qopen{border:0;background:none;padding:0;text-align:left;width:100%;font-family:inherit;color:inherit}
+.links a.pill{cursor:pointer}
+.links a.del{border-color:#E6B0AA;color:#C0392B}
+.yt{display:block;position:relative;width:min(100%,300px);margin:0 auto;aspect-ratio:9/16;border-radius:14px;overflow:hidden;background:#000}
+.yt iframe,.yt img,.yt video{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover}
+.yt video{object-fit:contain}
+.sugg summary{cursor:pointer;font-weight:700;padding:4px 0}.sugg[open] summary{margin-bottom:10px}
+.shiftc{margin:8px 0;padding:8px 10px;border-radius:10px;background:rgba(6,199,85,.08);font-size:14px;line-height:1.6}.shiftc .save{display:inline-block;background:var(--g);color:#fff;border-radius:999px;padding:0 8px;font-size:12px;font-weight:800}
+.rqbadge{display:inline-block;font-size:11px;font-weight:700;background:rgba(255,160,0,.18);color:#b36b00;border-radius:999px;padding:1px 7px;margin-left:4px}
+.cnote{font-size:12px;color:var(--sub,#777);background:rgba(127,127,127,.12);border-radius:10px;padding:6px 10px;margin:0 0 10px;text-align:center}
+.yt .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:rgba(255,0,0,.9);color:#fff;font-size:28px;line-height:64px;text-align:center;padding-left:4px;box-sizing:border-box}
+footer{text-align:center;font-size:12px;color:#777;line-height:1.9;padding:10px 0 4px}
+footer a{color:#9A3412;text-decoration:none;font-weight:700;cursor:pointer}
+footer .copy{color:#aaa;font-size:11px}
+footer .views{color:#999;font-size:11px;margin:-4px 0 8px}html.dark footer .views{color:#9C8B7B}
+.sponsor{display:inline-block;cursor:pointer;background:none;font:inherit;font-weight:700;line-height:1.3;font-weight:700;text-decoration:none;margin:0 0 6px;border:2px solid var(--g);border-radius:18px;padding:5px 14px;color:var(--g)}
+.back{border:0;background:none;color:var(--g);font-weight:800;font-size:14px;padding:4px 0 10px;font-family:inherit}
+
+/* ---------- v22 介面 ---------- */
+.mopt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid #e3e3e3;background:#FFFDF9;border-radius:14px;padding:12px 14px;margin:0 0 10px;font-family:inherit;color:inherit}
+.mopt:last-child{margin-bottom:0}
+.mopt .ic{font-size:26px;line-height:1;flex:none}
+.mopt .tx{flex:1}.mopt b{display:block;font-size:16px}.mopt span{display:block;font-size:13px;color:#777;margin-top:2px}
+.mopt .rec{flex:none;background:var(--lg);color:#9A3412;font-size:12px;font-weight:800;border-radius:10px;padding:3px 8px}
+.mopt .ar{flex:none;color:#bbb;font-size:20px}
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tile{border:1.5px solid #e3e3e3;background:#FFFDF9;border-radius:14px;padding:12px 4px 10px;font-family:inherit;color:#111;font-size:14px;font-weight:700;text-align:center}
+.tile i{display:block;font-style:normal;font-size:26px;line-height:32px;margin-bottom:2px}
+.tile.on{border-color:var(--g);background:var(--lg);color:#9A3412}
+.ghead{font-size:15px;font-weight:800;color:#333;margin:18px 4px 8px}
+.ghead:first-of-type{margin-top:6px}
+.best{display:inline-block;background:#FFE8E5;color:#C0392B;font-size:12px;font-weight:800;border-radius:10px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+.note{font-size:12px;color:#888;margin:-4px 2px 12px}
+.links a.pri{background:var(--g);color:#fff}
+
+/* ---------- v16 動畫 ---------- */
+#splash{position:fixed;inset:0;z-index:50;background:var(--g);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;transition:opacity .35s ease,visibility .35s}
+#splash.out{opacity:0;visibility:hidden}
+#splash .lg{width:96px;height:96px;border-radius:50%;background:#FFFDF9;display:flex;align-items:center;justify-content:center;font-size:48px;box-shadow:0 8px 30px rgba(0,0,0,.18);animation:spPop .6s cubic-bezier(.3,1.6,.5,1) both}
+#splash .lg img{width:96px;height:96px;border-radius:50%}
+#splash b{font-size:24px;font-weight:800;margin-top:14px;animation:spUp .5s .15s ease-out both}
+#splash small{font-size:13px;opacity:.9;margin-top:4px;animation:spUp .5s .25s ease-out both}
+@keyframes spPop{0%{transform:scale(.3) rotate(-20deg);opacity:0}100%{transform:none;opacity:1}}
+@keyframes spUp{0%{transform:translateY(12px);opacity:0}100%{transform:none;opacity:1}}
+button,.links a,.sponsor{transition:transform .15s cubic-bezier(.3,1.6,.5,1),background-color .2s,color .2s}
+button:active:not(:disabled),.links a:active,.sponsor:active{transform:scale(.94)}
+.sprow{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 0 6px}.sprow .sponsor{margin:0}
+.btn.press{animation:bounce .35s cubic-bezier(.3,1.6,.5,1)}
+@keyframes bounce{0%{transform:scale(1)}35%{transform:scale(.92)}70%{transform:scale(1.04)}100%{transform:scale(1)}}
+nav button b{transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+nav button.on b{transform:translateY(-2px) scale(1.12)}
+main.inR{animation:inR .28s ease-out both}main.inL{animation:inL .28s ease-out both}main.inF{animation:inF .22s ease-out both}
+@keyframes inR{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes inL{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+@keyframes inF{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card.fl{animation:flIn .45s cubic-bezier(.2,.9,.3,1.15) both;animation-delay:calc(var(--i,0)*60ms)}
+@keyframes flIn{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
+.chip.on{animation:chipOn .3s cubic-bezier(.3,1.6,.5,1)}
+@keyframes chipOn{0%{transform:scale(.9)}100%{transform:scale(1)}}
+.loader{text-align:center;padding:14px 10px 6px}
+.loader svg{display:block;margin:0 auto;width:240px;max-width:100%;height:70px;overflow:visible}
+.loader .path{stroke:#F3C2A4;stroke-width:2;stroke-dasharray:6 6;fill:none;animation:dash 1s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-24}}
+.loader .plane{offset-path:path('M10,55 C70,0 170,0 230,40');offset-rotate:auto;animation:fly 1.8s ease-in-out infinite;transform-box:fill-box}
+@keyframes fly{0%{offset-distance:0%;opacity:0}12%{opacity:1}88%{opacity:1}100%{offset-distance:100%;opacity:0}}
+.loader .mag{display:inline-block;font-size:22px;animation:wob 1.2s ease-in-out infinite;transform-origin:60% 60%}
+@keyframes wob{0%,100%{transform:rotate(-12deg) translateX(-2px)}50%{transform:rotate(12deg) translateX(2px)}}
+.loader p{margin:4px 0 0;font-size:14px;color:#555;font-weight:700}
+.sk{background:#FFFDF9;border-radius:16px;padding:14px;margin-bottom:12px}
+.sk i{display:block;height:12px;border-radius:6px;margin:8px 0;background:linear-gradient(90deg,#eceeed 25%,#f7f8f8 45%,#eceeed 65%);background-size:300% 100%;animation:shim 1.2s linear infinite}
+.sk i.t{width:40%;height:18px}.sk i.p{width:55%;height:26px}.sk i.s{width:80%}
+@keyframes shim{from{background-position:100% 0}to{background-position:-50% 0}}
+@media (prefers-reduced-motion:reduce){
+ *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.01ms!important}
+ .loader .plane{offset-distance:50%;opacity:1}
+}
+/* ---------- v23 底部列（參考國考神器） ---------- */
+nav{background:#FFFDF9f2;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid #e3e8ee;padding:4px env(safe-area-inset-right) calc(4px + env(safe-area-inset-bottom)) env(safe-area-inset-left)}
+nav button{flex:1 1 0;min-width:0;padding:4px 0 2px;font-size:10.5px;color:#8a949e;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+nav button svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+nav button.on{color:var(--g);font-weight:700}nav button.on svg{transform:translateY(-1px) scale(1.08)}
+/* ---------- v23 易用性 ---------- */
+.chip{min-height:44px;padding:9px 15px;font-size:15px}
+.links a{min-height:46px;display:flex;align-items:center;justify-content:center;padding:10px 0;font-size:15px}
+.links.small a{min-height:40px;font-size:13px;padding:6px 0}
+.tile{min-height:76px;font-size:15px}.mopt{min-height:64px}
+.back{min-height:44px;font-size:15px;padding:8px 12px 8px 0}
+.step{font-size:15px;font-weight:800;color:#333}
+.card .grp,.card .taxl,.card .meta{font-size:12px}
+.card .price{font-size:30px}
+.card .info{font-size:15px}
+.empty{background:#FFFDF9;border-radius:16px;padding:28px 14px;font-size:15px;line-height:1.6}
+.empty:before{content:"🧳";display:block;font-size:34px;margin-bottom:6px}
+.flform input,.flform select{min-height:44px;box-sizing:border-box;font-size:16px}
+#mfno,#mfdt{width:100%}
+nav button{min-height:52px}
+.stepbar{display:flex;gap:6px;margin:0 0 10px}.stepbar i{flex:1;height:4px;border-radius:2px;background:#e3e3e3}.stepbar i.on{background:var(--g)}
+nav button{font-size:10px;letter-spacing:-.3px}nav button svg{width:22px;height:22px}
+.fbf textarea,.fbf input,.fbf select{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:10px;border:1px solid #d5dbe1;border-radius:10px;margin:6px 0}.fbf textarea{min-height:120px}
+.myqc{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#FDF1E6;border:2px solid #F3C2A4;border-radius:14px;padding:12px;margin:0 0 12px;font:inherit;cursor:pointer}.myqc b{font-size:16px}.myqc span{display:block;font-size:13px;color:#4a5560}
+.fwx.wa{position:relative;overflow:hidden;isolation:isolate}.fwx.wa>*{position:relative;z-index:1}.fwx.wa>.wfx{position:absolute;inset:0;z-index:0!important;pointer-events:none;overflow:hidden}
+.fwx.wa.w-clear{background:linear-gradient(135deg,#FFF6D6,#FFE29A)}.fwx.wa.w-night{background:linear-gradient(135deg,#1F2A4A,#3A4A78);color:#EEF}.w-night .fwl,.w-night .fwd{color:#C9D3F5!important}
+.fwx.wa.w-cloud{background:linear-gradient(135deg,#EEF2F6,#CFD8E3)}.fwx.wa.w-rain{background:linear-gradient(135deg,#C9D6E3,#93A9C0)}.fwx.wa.w-storm{background:linear-gradient(135deg,#7C8799,#4A5466);color:#fff}.w-storm .fwl,.w-storm .fwd{color:#E3E8F0!important}
+.fwx.wa.w-snow{background:linear-gradient(135deg,#F4F8FC,#DCE7F2)}.fwx.wa.w-fog{background:linear-gradient(135deg,#ECEDEE,#D3D6D9)}
+html.dark .fwx.wa.w-clear{background:linear-gradient(135deg,#4A3B12,#6B5216)}html.dark .fwx.wa.w-cloud{background:linear-gradient(135deg,#252B33,#36404C)}html.dark .fwx.wa.w-rain{background:linear-gradient(135deg,#1C2836,#2D3F55)}html.dark .fwx.wa.w-snow{background:linear-gradient(135deg,#26303A,#3A4856)}html.dark .fwx.wa.w-fog{background:linear-gradient(135deg,#2A2D30,#3B3F43)}html.dark .fwx.wa.w-storm{background:linear-gradient(135deg,#1A1E26,#2E3440)}
+.wsun{position:absolute;right:14px;top:10px;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle,#FFD54F 45%,#FFB300 70%,transparent 72%);box-shadow:0 0 18px 6px rgba(255,193,7,.55);animation:wglow 3s ease-in-out infinite}
+.wsun:before{content:'';position:absolute;inset:-12px;border-radius:50%;background:repeating-conic-gradient(rgba(255,179,0,.55) 0 8deg,transparent 8deg 30deg);-webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);mask:radial-gradient(circle,transparent 58%,#000 60%);animation:wspin 14s linear infinite}
+.wmoon{position:absolute;right:16px;top:10px;width:38px;height:38px;border-radius:50%;box-shadow:-9px 5px 0 0 #F3EDC8;filter:drop-shadow(0 0 8px rgba(243,237,200,.6));animation:wglow 4s ease-in-out infinite}
+.wstar{position:absolute;width:3px;height:3px;border-radius:50%;background:#FFFDF9;animation:wtw 2.5s ease-in-out infinite}
+.wcl{position:absolute;width:70px;height:22px;border-radius:22px;background:rgba(255,255,255,.85);animation:wdrift 18s linear infinite}.wcl:before,.wcl:after{content:'';position:absolute;background:inherit;border-radius:50%}.wcl:before{width:30px;height:30px;left:10px;top:-14px}.wcl:after{width:22px;height:22px;left:34px;top:-9px}
+html.dark .wcl{background:rgba(160,175,195,.35)}.w-rain .wcl,.w-storm .wcl{background:rgba(110,125,145,.6)}
+.wdrop{position:absolute;top:-14px;width:2px;height:12px;border-radius:2px;background:linear-gradient(transparent,rgba(40,90,160,.75));animation:wfall .8s linear infinite}html.dark .wdrop,.w-storm .wdrop{background:linear-gradient(transparent,rgba(170,205,255,.8))}
+.wflk{position:absolute;top:-8px;width:6px;height:6px;border-radius:50%;background:#FFFDF9;box-shadow:0 0 3px rgba(120,150,190,.7);animation:wsnow 5s linear infinite}
+.wfl{position:absolute;inset:0;background:#FFFDF9;opacity:0;animation:wflash 6s infinite}
+.wmist{position:absolute;left:-30%;width:160%;height:16px;border-radius:16px;background:rgba(255,255,255,.7);filter:blur(4px);animation:wmist 7s ease-in-out infinite}html.dark .wmist{background:rgba(200,205,210,.22)}
+@keyframes wspin{to{transform:rotate(360deg)}}@keyframes wglow{50%{filter:brightness(1.15);transform:scale(1.05)}}@keyframes wtw{50%{opacity:.2}}
+@keyframes wdrift{from{transform:translateX(-90px)}to{transform:translateX(420px)}}@keyframes wfall{to{transform:translate(-8px,140px)}}@keyframes wsnow{to{transform:translate(14px,140px) rotate(180deg)}}
+@keyframes wflash{0%,90%,94%,100%{opacity:0}91%,93%{opacity:.55}}@keyframes wmist{0%,100%{transform:translateX(0);opacity:.35}50%{transform:translateX(12%);opacity:.85}}
+.sprow{flex-wrap:wrap}.socg{display:inline-flex;gap:8px}.sponsor.soc{display:inline-flex;width:39px;height:39px;box-sizing:border-box;align-items:center;justify-content:center;padding-left:0;padding-right:0;aspect-ratio:1;border-radius:50%}.sponsor.soc svg{display:block}.hwx{margin:0 0 10px;padding:8px 12px}.hwask{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 8px;font-size:13px;color:#667}html.dark .hwask{color:#AAB}.hwr{display:flex;align-items:center;gap:8px;justify-content:space-between}.hwm{min-width:0}.hwhl{font-size:13px;opacity:.85;margin-left:4px}.hwch{display:flex;gap:4px;flex-shrink:0}
+.hwc{border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.6);color:#333;border-radius:12px;font-size:12px;padding:2px 8px;cursor:pointer;min-height:26px}.hwc.on{background:#9A3412;color:#fff;border-color:#9A3412}
+html.dark .hwc{background:rgba(0,0,0,.3);color:#DDE;border-color:rgba(255,255,255,.2)}html.dark .hwc.on{background:#C2410C;color:#fff}.w-night .hwc:not(.on),.w-storm .hwc:not(.on){background:rgba(0,0,0,.25);color:#EEF;border-color:rgba(255,255,255,.3)}
+html.dark .chip.mfdel{color:#FF8A80;border-color:#E57373}.chip.mfdel{color:#C62828}
+.fwx.off .wfx *,.fwx.off .wfx *:before{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.wfx *,.wfx *:before{animation:none!important}.wdrop,.wflk,.wfl{display:none}}
+.wdst{position:relative;display:inline-flex;align-items:center;gap:4px;margin:0 1px;padding:1px 7px 1px 8px;border:0;border-radius:999px;font:inherit;font-weight:600;color:inherit;background:rgba(255,255,255,.45);box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);cursor:pointer;-webkit-tap-highlight-color:transparent;vertical-align:baseline}
+.wdst:before{content:"";position:absolute;inset:-10px -4px}.wdst svg{opacity:.7;transition:transform .2s}.wdst.on svg{transform:rotate(180deg)}.wdst:active{background:rgba(255,255,255,.7)}.wdst:focus-visible{outline:2px solid #9A3412;outline-offset:2px}
+.w-night .wdst,.w-storm .wdst,html.dark .wdst{background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}html.dark .wdst:active{background:rgba(255,255,255,.24)}
+.wpick{margin-top:6px;padding:8px 10px;border-radius:10px;background:#F4F6F8;border:1px solid #E3E7EB}.wpkh{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#667}.wpkx{border:0;background:none;font-size:20px;line-height:1;color:#889;min-width:36px;min-height:32px;cursor:pointer}
+html.dark .wpick{background:#1B2229;border-color:#2C3640}html.dark .wpkh,html.dark .wpkx{color:#9AA8B5}
+.fwx{margin-top:8px;background:#FDF6EE;border-radius:10px;padding:8px 10px;font-size:14px;line-height:1.5}.fwl{display:block;font-size:12px;color:#75604F}.fwn b{font-size:18px}.fwd{font-size:13px;color:#4A2E1E}
+.flc{border:1px solid #e3e8ee;border-radius:12px;padding:10px 12px;margin:8px 0;background:#fafcff}.flc.late{border-color:#F5B041}.flc.bad{border-color:#E74C3C}.fh{font-weight:700;display:flex;justify-content:space-between;gap:8px;align-items:center}.fst{font-size:13px;padding:2px 8px;border-radius:10px;background:#FDF1E6;color:#B4441A;white-space:nowrap}.flc.late .fst{background:#FEF5E7;color:#B9770E}.flc.bad .fst{background:#FDEDEC;color:#C0392B}.fgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 10px;margin-top:8px}.fr{display:flex;flex-direction:column}.fr span{font-size:12px;color:#888}.fr b{font-size:15px}.frem{margin-top:8px;background:#EBF5FB;color:#1B4F72;border-radius:10px;padding:8px 10px;font-size:14px;line-height:1.6}
+/* v28 深色模式 */
+html.dark{color-scheme:dark;--g:#A93A0B;--lg:#4A2516;--grey:#B3A190;--tip:#FFB060;--tipbg:#3A2A14}
+html.dark body{background:#1A1410;color:#F3E9DC}
+html.dark header{background:#3A1D10}
+html.dark #annn,html.dark #nfyn{border-color:#3A1D10}
+html.dark #nfybell{background:#2A211B}html.dark #nfybell svg{fill:#F0875A;stroke:#F0875A}
+html.dark .panel,html.dark .card,html.dark .sk,html.dark .empty,html.dark .annc,html.dark .mopt,html.dark .tile,html.dark .chip,html.dark .actab{background:#2A211C;color:#F3E9DC;box-shadow:none;border-color:#40322A}
+html.dark .chip{border-color:#F0875A;color:#F0875A}html.dark .chip.on,html.dark .actab.on{background:#A93A0B;color:#fff;border-color:#A93A0B}
+html.dark nav{background:#211A15f2;border-top-color:#40322A}html.dark nav button{color:#B3A190}html.dark nav button.on{color:#F0875A}
+html.dark input,html.dark textarea,html.dark select{background:#1E1712;color:#F3E9DC;border-color:#46382D}
+html.dark input::placeholder,html.dark textarea::placeholder{color:#968574}
+html.dark .flc{background:#221A15;border-color:#40322A}html.dark .fr span{color:#B3A190}
+html.dark .frem{background:#14283A;color:#BFE0F5}html.dark .fwx{background:#2E1F16}html.dark .fwl{color:#C3A893}html.dark .fwd{color:#F2D3BC}
+html.dark .fst{background:#43261A;color:#F5B58F}html.dark .flc.late .fst{background:#3A2E14;color:#F5C26B}html.dark .flc.bad .fst{background:#3D1B18;color:#FF8A80}
+html.dark .annb{background:#13283A;border-color:#24496A}html.dark .annb .ao{color:#F3E9DC}html.dark .annb .ao span{color:#CBB9A6}html.dark .annb.imp{background:#3A2A14;border-color:#7A5422}
+html.dark .acb{filter:brightness(.9) saturate(1.2)}html.dark .acb[style]{background:#33281F!important}
+html.dark #splash{background:#3A1D10}
+html.dark a{color:#F2A07A}
+html.dark [style*="color:#777"],html.dark [style*="color:#888"],html.dark [style*="color:#999"],html.dark [style*="color:#666"],html.dark [style*="color:#555"]{color:#B3A190!important}
+html.dark [style*="color:#333"],html.dark [style*="color:#111"],html.dark [style*="color:#222"],html.dark [style*="color:#444"]{color:#EADCCB!important}
+html.dark [style*="background:#FFFDF9"]{background:#2A211C!important}
+html.dark [style*="color:#C0392B"]{color:#FF8A80!important}
+html.dark .myqc{background:#3A2316;border-color:#8A3A18;color:#F3E9DC}html.dark .myqc *{color:inherit}
+html.dark .mopt,html.dark .mopt b,html.dark .tile,html.dark .card,html.dark .annc h3,html.dark h2,html.dark h3,html.dark .dest{color:#F3E9DC}html.dark .mopt .tx span,html.dark .mopt span{color:#CBB9A6}html.dark .mopt .rec{color:#F5B58F}html.dark .step{color:#CBB9A6}
+html.dark .note,html.dark .info{color:#CBB9A6}
+.flx{margin-top:8px}.flx summary{list-style:none;display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#7a8590;cursor:pointer;padding:6px 2px;min-height:32px;-webkit-user-select:none;user-select:none}.flx summary::-webkit-details-marker{display:none}.flx summary::after{content:'▾';font-size:11px;transition:transform .2s}.flx[open] summary::after{transform:rotate(180deg)}.flx .links{margin-top:4px}
+html.dark .flx summary{color:#B3A190}
+html.dark .annb .ax,html.dark .mopt .ar{color:#9C8B7B}html.dark .actab{border-color:#40322A}
+html.dark .help p,html.dark .help li,html.dark .help h3,html.dark .help b,html.dark .help td,html.dark .help th{color:#EADCCB}
+html.dark footer{color:#B3A190}html.dark footer a{color:#F2A07A}html.dark footer .copy{color:#968574}
+html.dark .bagl,html.dark .card .lhs,html.dark .ghead,html.dark .sel,html.dark .summary{color:#EADCCB}html.dark .bagl.inc{color:#F5B58F}
+html.dark .bagnote,html.dark .card .taxl,html.dark .sortc span,html.dark .empty,html.dark .card .meta .alt{color:#B3A190}html.dark .card .info{color:#CBB9A6}
+html.dark .card .lhw{color:#F5B06B}html.dark .hint,html.dark .card .meta .seller{color:#FFB060}
+html.dark .best{background:#3D1B18;color:#FF8A80}html.dark .links a.del{border-color:#7A3A34;color:#FF8A80}
+html.dark .links a{border-color:#F0875A;color:#F0875A}html.dark .links a.pri{background:#A93A0B;border-color:#A93A0B;color:#fff}
+html.dark .mopt .rec,html.dark .cal-head button{background:#4A2516;color:#F5B58F}
+html.dark .tile{border-color:#40322A}html.dark .tile.on{border-color:#F0875A;background:#4A2516;color:#F5B58F}
+html.dark .grid .d{color:#F3E9DC}html.dark .grid .d:disabled{color:#57483C}html.dark .grid .d.end{color:#fff}
+html.dark .loader p{color:#CBB9A6}html.dark .toast{background:#F3E9DC;color:#111}
+html.dark .wpick{color:#F3E9DC}
+html.dark [style*="background:#FDEDEC"]{background:#3D1B18!important;color:#FF8A80!important}html.dark [style*="border:2px solid #E6B0AA"]{border-color:#7A3A34!important}
+
+.sprow{display:flex!important;align-items:center!important;justify-content:center;gap:8px;flex-wrap:wrap}.sprow .socg{display:inline-flex;align-items:center;gap:8px}.sprow .sponsor{display:inline-flex!important;align-items:center;justify-content:center;vertical-align:middle;box-sizing:border-box;height:39px;line-height:1!important;margin:0!important;padding-top:0;padding-bottom:0;font-size:14px;transform:none!important;animation:none!important;white-space:nowrap;position:static!important;top:auto!important}.sprow .sponsor:active{transform:scale(.94)!important}
+.sprow{gap:8px}.sprow .socg{gap:8px}.sprow .sponsor{height:36px;font-size:13.5px;padding:0 14px;border-width:1.5px;border-radius:18px;gap:5px;background:transparent}.sprow .sponsor.soc{width:36px;height:36px;padding:0}.sprow .sponsor.soc svg{width:17px;height:17px}.sprow .sponsor:hover{background:rgba(6,199,85,.08)}@media(max-width:360px){.sprow{gap:6px}.sprow .socg{gap:6px}.sprow .sponsor{padding:0 10px;font-size:13px;height:34px}.sprow .sponsor.soc{width:34px;height:34px;padding:0}}
+.sprow .sponsor,.sprow .sponsor:visited{color:var(--g)!important;border-color:var(--g)!important}html.dark .sprow .sponsor,html.dark .sprow .sponsor:visited{color:#F5A27A!important;border-color:#D9612F!important}
+.dsbox{margin:4px 0 12px}.dsin{display:flex;align-items:center;gap:8px;border:1.5px solid #d7dee6;border-radius:14px;padding:0 6px 0 12px;background:#FFFDF9;color:#889}.dsin:focus-within{border-color:var(--g);box-shadow:0 0 0 3px rgba(46,125,50,.15)}.dsin input{flex:1;min-width:0;border:0;outline:0;background:transparent;font-family:inherit;font-size:16px;padding:12px 0;color:#222;-webkit-appearance:none;appearance:none}.dsin input::-webkit-search-cancel-button{display:none}.dsx{border:0;background:#e9edf1;color:#556;width:28px;height:28px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer;flex:none}.dsx[hidden]{display:none}.dschips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.dschip{display:inline-flex;align-items:baseline;gap:4px;min-height:42px;padding:8px 14px;border:1px solid #F2D9C6;border-radius:22px;background:#FDF6EE;font-family:inherit;font-size:15px;color:#3A1D10;cursor:pointer}.dschip small{font-size:12px;color:#857060}.dschip:active{transform:scale(.97)}.dsno{margin:10px 2px 0;font-size:14px;color:#777}html.dark .dsin{background:#1e2329;border-color:#3a434d;color:#9aa}html.dark .dsin input{color:#eee;background:transparent!important;border:0!important;box-shadow:none!important}html.dark .dsx{background:#333b44;color:#ccd}html.dark .dschip{background:#33281F;border-color:#5A3A28;color:#FBEBDD}html.dark .dschip small{color:#C3A893}html.dark .dsno{color:#aab}.cntag{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:10px;font-size:12px;font-weight:600;background:#FFFDF91e0;color:#a24d00;border:1px solid #f3cf9f;vertical-align:middle}html.dark .cntag{background:#3a2a18;color:#ffc27a;border-color:#6a4a22}.cncard{border-left:4px solid #f0a65a}.rqbox{margin-top:10px;padding:12px;border:1px dashed #D7C2B0;border-radius:14px;background:#FFFCF8}.rqbox p{margin:0 0 8px;font-size:14px;color:#555}.rqadd{min-height:42px;padding:9px 16px;border:0;border-radius:22px;background:var(--g);color:#fff;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer}.rqadd[disabled]{opacity:.6}.rqst{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.rqchip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:14px;font-size:12.5px;background:#FFFDF96e0;color:#7a5600;border:1px solid #f0dca6}.rqchip.none{background:#f3f3f3;color:#666;border-color:#ddd}.rqchip.active{background:#FBEBDD;color:#7C2D12;border-color:#F2D3BC}html.dark .rqbox{background:#2A211B;border-color:#5A3A28}html.dark .rqbox p{color:#c3ccc5}html.dark .rqchip{background:#3a3220;color:#f3d98b;border-color:#5a4b25}html.dark .rqchip.none{background:#2a2e33;color:#aab;border-color:#3a434d}html.dark .rqchip.active{background:#33241A;color:#EDB894;border-color:#6A3018}
+.mycy{padding:12px 14px}.mycy-h{display:flex;align-items:baseline;gap:6px;font-size:16px}.mycy-h small{color:#889;font-size:12px}.mycy-x{margin-left:auto;border:0;background:transparent;color:#999;font-size:16px;padding:2px 6px;cursor:pointer;border-radius:8px}.mycy-x:hover{background:rgba(192,57,43,.1);color:#C0392B}.mycy-i{font-size:13px;color:#667;margin:4px 0 8px}.mycy-s{display:inline-block;border:0;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}span.mycy-s{cursor:default}.mycy-s.p{background:#FFF4D6;color:#8A5A00}.mycy-s.a{background:#FBEBDD;color:#8A3410}.mycy-s.n{background:#F1F1F3;color:#5b5b66}.mycy-s.c{background:#E4EEFB;color:#1F4E8C}.mycy-exp{display:block;margin-top:8px;border:1px dashed #E0A23A;background:#FFF8EC;color:#8A5A00;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer}html.dark .mycy-exp{background:#3a2e12;color:#FFD98A;border-color:#8a6a2a}
+.pcard{position:relative;display:flex;gap:12px;align-items:center;margin:0 0 12px;padding:14px 40px 14px 14px;border-radius:16px;background:linear-gradient(135deg,#FFF6E0,#FFE9C2);border:1px solid #F3D08A;box-shadow:0 2px 10px rgba(200,140,0,.12)}.pcard .pi{font-size:28px;line-height:1}.pcard b{display:block;font-size:15px;color:#5a3d00}.pcard p{margin:2px 0 8px;font-size:13px;color:#7a5a1a}.pcard .pbtn{border:0;border-radius:999px;background:#C2410C;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;font-family:inherit;cursor:pointer}.pcard .pbtn[disabled]{opacity:.7}.pcard .px{position:absolute;top:6px;right:6px;border:0;background:transparent;color:#a08040;font-size:18px;padding:4px 8px;cursor:pointer;border-radius:8px}.pcard .pmsg{font-size:12px;color:#9a4a00;margin:6px 0 0}html.dark .pcard{background:linear-gradient(135deg,#3a2f14,#2e2610);border-color:#6a5420}html.dark .pcard b{color:#FFE2A0}html.dark .pcard p{color:#e0c890}html.dark .pcard .px{color:#c9a860}html.dark .pcard .pmsg{color:#ffb070}
+html.dark .mycy-i{color:#aab}html.dark .mycy-s.p{background:#4a3a10;color:#FFD98A}html.dark .mycy-s.a{background:#3A2216;color:#F3C2A4}html.dark .mycy-s.n{background:#33343a;color:#cfd0d8}html.dark .mycy-s.c{background:#1c2f4a;color:#A9C9F5}
+
+/* ---- 飯省：奶油色頁首，讓橘色圖示跳出來 ---- */
+:root{--hd:#FFF8EF;--hdtx:#3B2316;--line:#EADBC8}
+header{background:var(--hd);color:var(--hdtx);border-bottom:1px solid var(--line);flex-wrap:wrap;row-gap:8px;padding-bottom:10px}
+header img#logo{width:40px;height:40px;border-radius:11px;background:none;box-shadow:0 2px 6px rgba(124,45,18,.25)}
+header h1{color:var(--hdtx)}header small{color:#8A5A3C;opacity:1}
+#nfybell{background:#FDE6D3}#nfybell svg,#thbtn svg{width:22px;height:22px;fill:none;stroke:#9A3412;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+#thbtn{width:44px;height:44px;border:0;background:none;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:-6px -4px -6px 0}
+#nfybell b{position:absolute;top:4px;right:4px;background:#E53935;color:#fff;font-size:11px;border-radius:9px;padding:0 5px;line-height:16px}#nfybell b:empty{display:none}
+.annbar{flex-basis:100%;display:flex;align-items:center;gap:8px;background:#FDEBDC;border:1px solid #F2CDB2;border-radius:12px;min-height:44px;padding:0 6px 0 12px;overflow:hidden;position:relative;cursor:pointer}
+.annbar .ai{font-size:16px;flex:none}
+.annbar .vw{flex:1;position:relative;height:40px;overflow:hidden}
+.annbar .it{position:absolute;inset:0;display:flex;align-items:center;font-size:14px;color:#5A2A12;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:transform .45s ease,opacity .45s ease}
+.annbar .it.up{transform:translateY(-100%);opacity:0}.annbar .it.dn{transform:translateY(100%);opacity:0}
+.annbar .dots{display:flex;gap:4px;flex:none}.annbar .dots i{width:6px;height:6px;border-radius:3px;background:#E9BFA2}.annbar .dots i.on{background:#C2410C;width:14px}
+html.dark{--hd:#241A14;--hdtx:#F3E9DC;--line:#3A2C23}
+html.dark header{background:var(--hd)}html.dark header small{color:#D9B79C}
+html.dark #nfybell{background:#3A2418}html.dark #nfybell svg,html.dark #thbtn svg{stroke:#F5A27A}
+html.dark .annbar{background:#32221A;border-color:#4A3226}html.dark .annbar .it{color:#F6D9C3}html.dark .annbar .dots i{background:#5A3E30}html.dark .annbar .dots i.on{background:#F0875A}
+#splash{background:var(--hd);color:var(--hdtx)}#splash .lg{border-radius:26px;background:none}#splash .lg img{border-radius:26px}
+/* 結果卡：精簡 */
+.hc{position:relative;cursor:pointer}.hc h3{margin:0 70px 4px 0;font-size:17px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hc .mt{font-size:13px;color:#7A6656;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rt{background:#9A3412;color:#fff;border-radius:8px;padding:2px 7px;font-weight:800;font-size:13px}
+.cpb{position:absolute;top:14px;right:14px;background:var(--lg);color:#9A3412;border-radius:10px;padding:4px 9px;font-weight:800;font-size:13px}
+.hc .pr{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:10px}
+.hc .pr b{font-size:24px;color:#9A3412;line-height:1}.hc .pr small{display:block;font-size:12px;color:#8A7766;margin-top:3px}
+.hc .pr .btn{width:auto;margin:0;padding:12px 18px;font-size:15px;min-height:48px;flex:none;text-decoration:none;display:inline-flex;align-items:center}
+.srcb{display:inline-flex;align-items:center;gap:6px;font-size:13px;border-radius:12px;padding:6px 10px;margin:0 0 10px;background:#FDEBDC;color:#7C2D12;font-weight:700}
+.srcb.bk{background:#FFF1DE;color:#8A4B00}.srcb.st{background:#FFE8E5;color:#9A2A1E}
+html.dark .srcb{background:#3A2418;color:#F6CDB0}html.dark .hc .mt,html.dark .hc .pr small{color:#CBB9A6}html.dark .hc .pr b{color:#F5A27A}html.dark .cpb{background:#4A2516;color:#F6CDB0}
+/* 底部選單 sheet */
+.shbg{position:fixed;inset:0;background:rgba(30,15,8,.45);z-index:20;opacity:0;transition:opacity .25s}.shbg.on{opacity:1}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:#FFFDF9;border-radius:20px 20px 0 0;z-index:21;padding:8px 16px calc(18px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.9,.3,1);max-width:560px;margin:0 auto}
+.sheet.on{transform:none}.sheet .grab{width:40px;height:5px;border-radius:3px;background:#E3D3C3;margin:4px auto 12px}
+.sheet h2{font-size:18px;margin:0 0 6px}.sheet .lk{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.sheet .lk a,.sheet .lk button{min-height:48px;display:flex;align-items:center;justify-content:center;border-radius:24px;border:2px solid var(--g);color:var(--g);font-weight:800;text-decoration:none;font-size:15px;background:none;font-family:inherit}
+html.dark .sheet{background:#241A14;color:#F3E9DC}
+.qk{display:flex;gap:8px;overflow-x:auto;margin:0 0 10px;padding-bottom:2px}.qk .chip{flex:none}
+.fld{display:block;font-size:13px;color:#7A6656;margin:0 0 10px}.fld input,.fld textarea,.fld select,.dinp{display:block;width:100%;margin-top:4px;min-height:48px;padding:10px 12px;border:1.5px solid #E7D8C6;border-radius:12px;font-size:16px;font-family:inherit;background:#fff;color:#2A1A10}
+.fld textarea{min-height:110px}
+html.dark .fld input,html.dark .fld textarea,html.dark .fld select,html.dark .dinp{background:#1E1712;border-color:#46382D;color:#F3E9DC}
+.sugbox{display:none;position:absolute;left:0;right:0;top:54px;background:#fff;border:1px solid #E7D8C6;border-radius:12px;box-shadow:0 6px 18px rgba(124,45,18,.15);z-index:9;max-height:320px;overflow:auto}
+.sg{min-height:48px;display:flex;align-items:center;gap:6px;padding:0 14px;font-size:15px;border-bottom:1px solid #F5EBDD;cursor:pointer}.sg small{color:#999}
+html.dark .sugbox{background:#241A14;border-color:#46382D}html.dark .sg{border-color:#3A2C23}
+.am{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.am span{background:#FBEBDD;color:#7C2D12;border-radius:10px;padding:4px 9px;font-size:13px}
+html.dark .am span{background:#3A2418;color:#F6CDB0}
+.cd{font-size:28px;font-weight:800;color:#9A3412}html.dark .cd{color:#F5A27A}
+.mbx{background:var(--mbx,#FFF1E3);border:1px solid var(--mbb,#F3D9BF);border-radius:14px;padding:10px 12px;margin:10px 0;font-size:14px}.mbx b{color:var(--accent,#C2410C)}.mbx .mbt{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.mbx a{flex:1;min-width:120px;text-align:center;text-decoration:none;padding:9px 10px;border-radius:12px;font-weight:700;font-size:13px;background:#C2410C;color:#fff}.mbx a.g{background:transparent;color:var(--accent,#C2410C);border:1.5px solid #C2410C}html.dark .mbx{--mbx:#3A2A20;--mbb:#5A3F2C}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px;margin:8px 0}.kv dt{color:#8A7766}.kv dd{margin:0;font-weight:700}
+.tgl{display:flex;align-items:center;justify-content:space-between;min-height:56px;gap:10px}
+.sw{width:56px;height:32px;border-radius:16px;background:#D8C8B8;position:relative;border:0;flex:none;transition:background .2s}.sw::after{content:'';position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:13px;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.sw.on{background:var(--g)}.sw.on::after{transform:translateX(24px)}
+.legal h3{font-size:16px;margin:16px 0 6px}.legal p,.legal li{font-size:14px;line-height:1.75}
+.plan{border:2px solid #EADBC8;border-radius:16px;padding:14px;margin-bottom:10px}.plan.rec{border-color:var(--g)}.plan b.p{font-size:22px;color:#9A3412}
+html.dark .back,html.dark .chip{color:#F5A27A;border-color:#E07A4A}html.dark .chip.on{color:#fff;background:#C2410C;border-color:#C2410C}html.dark .stepbar i{background:#40322A}html.dark .stepbar i.on{background:#F0875A}
+</style>
+</head>
+<body>
+<div id="splash" aria-hidden="true"><div class="lg"><img src="icons/icon-192.png" alt=""></div><b>飯省 FanSave</b><small>找 CP 值最高的飯店</small></div>
+<header><button id="annbell" data-act="ann" aria-label="公告"><svg viewBox="0 0 24 24"><path d="M3 10v4h3l7 4V6L6 10z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg><b id="annn"></b></button><img id="logo" src="icons/icon-192.png" alt="飯省"><h1>飯省 FanSave<small id="upd">找 CP 值最高的飯店</small></h1>
+<button id="thbtn" data-act="thx" aria-label="切換深色模式"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+<button id="nfybell" data-act="nf" aria-label="降價通知"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><b id="nfyn"></b></button>
+</header>
+<main id="main"></main>
+<nav>
+ <button data-tab="search" class="on" aria-label="找飯店"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>找飯店</button>
+ <button data-tab="mine" aria-label="我的查詢"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M8 3v4M16 3v4M8 14h3"/></svg>我的查詢</button>
+ <button data-tab="stays" aria-label="我的住宿"><svg viewBox="0 0 24 24"><path d="M3 18V8M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="2"/></svg>我的住宿</button>
+ <button data-tab="alerts" aria-label="降價通知"><svg viewBox="0 0 24 24"><path d="M3 7l6 6 4-4 8 8"/><path d="M21 11v6h-6"/></svg>降價通知</button>
+ <button data-tab="more" aria-label="其他"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>其他</button>
+</nav>
+<div class="toast" id="toast"></div>
+<script src="data.js"></script>
+<script>
+var API='https://script.google.com/macros/s/AKfycbwh8DsqFRmJPOvblQ3tvegty3kELnV_L1cQE102NoZfBZIf3OR4Jaw_Y0B2BeqI15uh/exec'; // 部署時 deploy.sh 會填入
+var RELAY='https://fansave-api.luke120513.workers.dev';
+var CONTACT='aicode1911@gmail.com', SPONSOR_URL='https://portaly.cc/dreamworld369/support', VER='v2.6.3'; var MAIL='<a href="mailto:'+CONTACT+'" style="color:var(--accent,#C2410C);text-decoration:underline;font-weight:600">'+CONTACT+'</a>';
+function $(i){return document.getElementById(i);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function lsg(k,d){k=k.replace(/^fs_/,'fan_');try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
+function lss(k,v){k=k.replace(/^fs_/,'fan_');try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+/* 飛省和飯省在同一個網域（luke120513-sys.github.io），localStorage 共用。v2.0.2 起飯省一律用 fan_ 開頭，
+   只搬飯省自己才有的資料；fs_push／fs_myq 屬於飛省，不搬（之前誤讀到飛省的「通知已開啟」）。 */
+(function(){try{if(localStorage.getItem('fan_mig'))return;['stays','det','st','last','ann','alerts','seen'].forEach(function(k){var v=localStorage.getItem('fs_'+k);if(v!=null&&localStorage.getItem('fan_'+k)==null)localStorage.setItem('fan_'+k,v);});
+  var dv=localStorage.getItem('fs_dev');if(dv&&!localStorage.getItem('fan_dev'))localStorage.setItem('fan_dev',dv);localStorage.setItem('fan_mig','1');}catch(e){}})();
+function iso(d){return d.toISOString().slice(0,10);}
+function today(){return iso(new Date(Date.now()+8*3600e3));}
+function addDays(s,n){var t=new Date(s+'T00:00:00Z');t.setUTCDate(t.getUTCDate()+n);return iso(t);}
+function nights(a,b){return Math.round((new Date(b)-new Date(a))/864e5);}
+function md(s){return s?(+s.slice(5,7))+'/'+(+s.slice(8,10)):'';}
+function wd(s){return '日一二三四五六'[new Date(s+'T00:00:00Z').getUTCDay()];}
+function money(n){return 'NT$'+Math.round(n).toLocaleString();}
+function toast(t){var e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on');},2200);}
+function buzz(){try{navigator.vibrate&&navigator.vibrate(8);}catch(e){}}
+function chip(l,act,on){return '<button class="chip'+(on?' on':'')+'" data-act="'+esc(act)+'">'+l+'</button>';}
+function bar(n,t){var h='<div class="stepbar">';for(var i=1;i<=t;i++)h+='<i'+(i<=n?' class="on"':'')+'></i>';return h+'</div>';}
+var DEV=lsg('fs_dev','');if(!DEV){DEV='d'+Math.random().toString(36).slice(2)+Date.now().toString(36);lss('fs_dev',DEV);}
+var CITIES='東京|Tokyo,大阪|Osaka,京都|Kyoto,福岡|Fukuoka,札幌|Sapporo,沖繩|Okinawa,名古屋|Nagoya,橫濱|Yokohama,神戶|Kobe,奈良|Nara,廣島|Hiroshima,金澤|Kanazawa,箱根|Hakone,首爾|Seoul,釜山|Busan,濟州|Jeju,香港|Hong Kong,澳門|Macau,上海|Shanghai,北京|Beijing,台北|Taipei,台中|Taichung,台南|Tainan,高雄|Kaohsiung,花蓮|Hualien,宜蘭|Yilan,墾丁|Kenting,曼谷|Bangkok,清邁|Chiang Mai,普吉島|Phuket,新加坡|Singapore,吉隆坡|Kuala Lumpur,檳城|Penang,峇里島|Bali,胡志明市|Ho Chi Minh City,河內|Hanoi,峴港|Da Nang,宿霧|Cebu,馬尼拉|Manila,巴黎|Paris,倫敦|London,羅馬|Rome,巴塞隆納|Barcelona,阿姆斯特丹|Amsterdam,維也納|Vienna,布拉格|Prague,紐約|New York,洛杉磯|Los Angeles,舊金山|San Francisco,溫哥華|Vancouver,雪梨|Sydney,墨爾本|Melbourne,杜拜|Dubai,伊斯坦堡|Istanbul'.split(',').map(function(x){return x.split('|');});
+var POP=['東京','大阪','京都','福岡','首爾','曼谷','台北','沖繩'];
+var tab='search', sub=null, st=lsg('fs_st',null)||{step:'dest',city:'',ci:'',co:'',g:2,budget:0,sort:'pop',month:''};
+if(st.step==='result'&&(!st.ci||st.ci<=today()))st.step='dest';if(!st.sort||st.sort==='cp'){st.sort='pop';}
+var R=null, LOADING=false, MYQ=lsg('fs_myq',[]), ALERTS=lsg('fs_alerts',[]), STAYS=lsg('fs_stays',[]), DET=lsg('fs_det',{}), PUSH=lsg('fs_push','off'), ANN=lsg('fs_ann',[]);
+var TABS=['search','mine','stays','alerts','more'], SUBS=['about','privacy','terms','help','plan','notifset'];
+/* 評分依評論數加權（評論少的往 8.0 拉），避免「9.1 分、40 則」排第一 */
+function adjR(h){var v=h.reviews||0,m=150,C=8.0;return h.rating?(v/(v+m))*h.rating+(m/(v+m))*C:0;}
+/* 交通便利係數：最近車站步行距離（≤300m 最好），再依離市中心距離微調；查不到 = 0.95 */
+function convF(h){var d=h.stationM,f=d==null?0.95:d<=300?1.15:d<=500?1.10:d<=800?1.0:d<=1200?0.88:0.78;
+  if(h.centerKm!=null)f+=h.centerKm<=3?0.05:h.centerKm>12?-0.05:0;return f;}
+/* 推薦分數 =（加權評分 − 6）² × 交通便利係數 × 10000 ÷ √每晚價格 */
+var PMED=0;function popS(h){if(!h.rating)return 0;var pf=PMED&&h.price?Math.max(0.85,Math.min(1.15,Math.pow(PMED/h.price,0.15))):1,cf=1+(convF(h)-1)*0.5;
+  return Math.round(Math.log10((h.reviews||0)+1)*Math.max(0,adjR(h)-6)*cf*pf*100);}
+var BUDS=[[0,'不限預算'],[2000,'≤2千'],[3500,'≤3.5千'],[5000,'≤5千']];
+function sortOpts(){return [['pop','👍 最多人推薦'],['walk','🚇 交通便利'],['price','💰 最便宜'],['rating','⭐ 評分']].concat(st.pt==='villa'?[]:[['lux','💎 豪華五星']]).concat(st.near&&st.geo&&!st.geo.fail?[['dist','📍 離'+st.near+'最近']]:[]);}
+function filtSheet(keep){if(!keep)st.ptn=st.pt||'hotel';var pt=st.ptn||'hotel',af=st.af||[];
+  var h='<h2>篩選</h2><p class="note" style="margin:0 0 6px">住宿類型</p><div class="chips">'+chip('🏨 飯店','pt:hotel',pt==='hotel')+chip('🏡 包棟・Villa','pt:villa',pt==='villa')+'</div>'+(pt==='villa'?'<p class="note" style="margin:6px 2px 0">整棟 Villa、整間公寓，適合多人；會顯示可住人數、房間數和每人每晚價格。</p>':'')+
+   '<p class="note" style="margin:14px 0 6px">設施（可複選）</p><div class="chips">'+AMK.map(function(a){return chip(a[1],'af:'+a[0],af.indexOf(a[0])>=0);}).join('')+'</div><p class="note" style="margin:8px 2px 0">只用訂房網站提供的設施資料；查不到設施資料的住宿會先隱藏，並告訴你隱藏了幾間。</p>'+
+   '<div style="display:flex;gap:8px;margin-top:14px"><button class="btn ghost" data-act="afclr" style="flex:1">清除</button><button class="btn" data-act="afgo" style="flex:2">套用</button></div>';
+  if(keep&&$('sheet')){$('sheet').innerHTML='<div class="grab"></div>'+h;}else sheet(h);}
+function ddBtn(lbl,act){return '<button class="dd" data-act="'+act+'">'+lbl+' <span>▾</span></button>';}
+function pickSheet(t,opts,cur,pre){sheet('<h2>'+t+'</h2><div class="pick">'+opts.map(function(o){return '<button data-act="'+pre+':'+o[0]+'"'+(String(o[0])===String(cur)?' class="on"':'')+'><span>'+o[1]+'</span>'+(String(o[0])===String(cur)?'<b>✓</b>':'')+'</button>';}).join('')+'</div>');}
+var AMK=[['breakfast','🍳 含早餐',/breakfast|早餐/i,1],['pool','🏊 泳池',/pool|泳池/i,0],['spa','♨️ 溫泉/SPA',/spa\b|onsen|hot spring|public bath|溫泉|SPA/i,1],['washer','🧺 洗衣機',/laundry|washing machine|洗衣|clothes dryer/i,1],['gym','🏋️ 健身房',/gym|fitness|健身/i,1],['parking','🅿️ 停車',/parking|停車/i,1],['shuttle','🚐 機場接駁',/shuttle|airport transfer|接駁/i,0]];
+function amText(h){return (h.hl||[]).concat(h.amenities||[],(h.ctags||[]).filter(function(t){return t.pos;}).map(function(t){return t.n;}),h.tags||[]).join('|');}
+function amHas(h,k){var a=AMK.filter(function(x){return x[0]===k;})[0];return a?a[2].test(amText(h)):false;}
+function amKnown(h){return !!((h.hl&&h.hl.length)||(h.amenities&&h.amenities.length));}
+function ptype(h){var n=(h.name||'')+' '+((h.hl||[]).join(' '));if(h.cat===519||/hostel|青年旅|青旅|backpack|ドミトリー|\bdorm|床位|bunk/i.test(n))return '青旅';if(h.cat===520||/capsule|膠囊|カプセル|\bpods?\b|cabin hotel/i.test(n))return '膠囊';if(h.cat===503||h.cat===510&&/guest|house|民宿|lodg/i.test(n)||/guest ?house|ゲストハウス|民宿|lodging house|homestay/i.test(n))return '民宿';if(/love hotel|ラブホ/i.test(n))return '情旅';if(h.cat===507||/\bvillas?\b(?! ?fontaine)/i.test(h.name||'')&&!(h.stars>=4&&/hotel/i.test(h.name||'')))return 'Villa';if(!(h.stars>=4)&&(h.cat===513||h.cat===505||/apartment|condo|co-?living|公寓/i.test(h.name||'')))return '公寓';return '';}
+function comfF(h){var u=h.sub||{},v=[u.Cleanliness,u.Room||u.Rooms||u.Amenities].filter(function(x){return x>0;}),f=1;
+  if(v.length){var a=v.reduce(function(p,c){return p+c;},0)/v.length;f+=Math.max(-0.06,Math.min(0.06,(a-8.5)*0.04));}
+  if(h.opened&&h.opened>=new Date().getFullYear()-3)f+=0.03;if(h.stars>=4)f+=0.02;
+  var t=amText(h),b=0;if(/delicious breakfast|varied breakfast|早餐好吃|breakfast/i.test(t))b+=0.015;['pool','spa','washer','gym'].forEach(function(k){if(amHas(h,k))b+=0.01;});if(/free (in-room )?wi-?fi|免費 ?wi-?fi/i.test(t))b+=0.005;if(amHas(h,'shuttle'))b+=0.01;f+=Math.min(0.04,b);
+  return Math.min(1.15,f);}
+function cpScore(h){if(!h.rating||!h.price)return 0;return Math.round(Math.pow(Math.max(0,adjR(h)-6),2)*convF(h)*comfF(h)*1e4/Math.sqrt(h.price));}
+var TAGZH=[[/clean/i,'🧼 乾淨'],[/quiet/i,'🤫 安靜舒適'],[/bed/i,'😴 床好睡'],[/breakfast/i,'🍳 早餐好吃'],[/view/i,'🌅 景觀好'],[/(great|awesome|spacious|comfortable|large) room/i,'🛏️ 房間舒適'],[/service|staff/i,'🤝 服務好'],[/amenit/i,'✨ 設施好'],[/onsen|hot spring|public bath|\bspa\b/i,'♨️ 溫泉/SPA'],[/value/i,'💰 物超所值']];
+function appeal(h){var src=(h.tags||[]).concat((h.ctags||[]).filter(function(t){return t.pos&&t.c>=3;}).map(function(t){return t.n;})),o=[];
+  src.forEach(function(t){TAGZH.forEach(function(z){if(z[0].test(t)&&o.indexOf(z[1])<0)o.push(z[1]);});});
+  if(h.opened&&h.opened>=new Date().getFullYear()-3)o.unshift(h.renov?'🆕 '+h.opened+' 新裝潢':'🆕 '+h.opened+' 新開幕');return o.slice(0,5);}
+function apChips(h,n){var a=appeal(h).slice(0,n||5);return a.length?'<div class="apc">'+a.map(function(t){return '<span>'+t+'</span>';}).join('')+'</div>':'';}
+function pics(h){var o=[];(h.imgs||[]).concat(h.gallery||[]).forEach(function(u){var k=u.replace(/_R_\d+_\d+.*$/,'');if(!o.some(function(x){return x.replace(/_R_\d+_\d+.*$/,'')===k;}))o.push(u);});return o;}
+function stName(n){return String(n||'').replace(/^metro station \((.*)\)$/i,'$1').replace(/ Sta\.$/,' Station');}
+function mapBox(name,where,stn,m,walk){var q=encodeURIComponent(name+(where?' '+where:'')),h='<div class="mbx">';
+  if(m!=null&&stn){var sn=stName(stn),w=Math.max(1,walk||Math.round(m/80));h+='🚉 距 <b>'+esc(sn)+'</b> 步行約 <b>'+w+' 分鐘</b>（約 '+(m>=1000?(m/1000).toFixed(1)+' km':m+' m')+'）';}
+  else h+='📍 '+esc(name);
+  h+='<div class="mbt"><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+q+'">🗺️ Google 地圖</a>';
+  if(m!=null&&stn)h+='<a class="g" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(stName(stn)+(where?' '+where:''))+'&destination='+q+'&travelmode=walking">🚶 從車站走過去</a>';
+  return h+'</div></div>';}
+function revSheet(i){var x=VIEW[i];if(!x)return;var q=encodeURIComponent(x.name+' '+(x.area||st.city)),ar=adjR(x);
+  sheet('<h2>⭐ '+esc(x.name)+'</h2><dl class="kv"><dt>評分</dt><dd>'+(x.rating?x.rating.toFixed(1)+' / 10':'尚無')+'</dd><dt>評論數</dt><dd>'+(x.reviews||0).toLocaleString()+' 則</dd><dt>加權評分</dt><dd>'+(ar?ar.toFixed(2):'—')+'<small style="font-weight:400;color:#8A7766">（評論少會往 8.0 靠）</small></dd></dl>'+
+  '<div class="mbx">想看住客真實評論：<div class="mbt"><a target="_blank" rel="noopener" href="'+esc(bookUrl(x))+'">Trip.com 評論</a><a class="g" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+q+'">Google 地圖評論</a></div></div><p class="note">評論內容在訂房網站／Google 地圖上查看（飯店頁往下捲到「評論」）。</p>');}
+function postBook(i){var x=VIEW[i];if(!x)return;setTimeout(function(){sheet('<h2>🏨 '+esc(x.name)+'</h2><p class="note" style="margin:4px 0 0">已幫你開啟訂房頁。順便看一下交通：</p>'+mapBox(x.name,x.area||st.city,x.station,x.stationM,x.walkMin)+'<button class="btn" data-act="booked:'+i+'" style="margin-top:4px">🧳 訂好了，加到「我的住宿」</button>');},300);}
+function walkTxt(h){return h.stationM==null?'':'🚇 車站步行 '+Math.max(1,h.walkMin||Math.round(h.stationM/80))+' 分';}
+function saveSt(){lss('fs_st',st);}
+
+/* ---------- 搜尋流程（照飛省：步驟條 → 日曆 → 結果） ---------- */
+function search(){
+  if(st.step==='result')return results();
+  if(st.step==='cal')return bar(2,2)+'<div class="panel"><button class="back" data-act="s:dest">‹ '+esc(st.city)+'</button><p class="step">📅 選入住和退房日期</p>'+quick()+calendar()+'</div>';
+  var last=lsg('fs_last',null);
+  return bar(1,2)+'<div class="panel"><p class="step">📍 想住哪裡？</p><div style="position:relative"><input id="dest" class="dinp" autocomplete="off" enterkeyhint="search" placeholder="輸入城市，中文或英文都可以" value="'+esc(st.city)+'"><div id="sug" class="sugbox"></div></div>'+nearBox()+
+   '<p class="note" style="margin:10px 2px 8px">熱門城市</p><div class="chips">'+POP.map(function(c){return chip(c,'city:'+c,st.city===c);}).join('')+'</div></div>'+
+   (last&&last.ci>today()?'<button class="mopt" data-act="relast"><span class="ic">🕘</span><span class="tx"><b>上次查詢：'+esc(last.city)+'</b><span>'+md(last.ci)+'（'+wd(last.ci)+'）→ '+md(last.co)+'・'+nights(last.ci,last.co)+' 晚・'+last.g+' 人</span></span><span class="ar">›</span></button>':'');
+}
+function nearBox(){var on=!!(st.near||st.nearOpen);return '<details class="nearb"'+(on?' open':'')+'><summary>📍 指定地點附近（選填）</summary><input id="nearq" class="dinp" autocomplete="off" placeholder="例如：美國村、淺草寺、心齋橋" value="'+esc(st.near||'')+'"><div class="chips" style="margin-top:8px">'+[1,3,5,10].map(function(k){return chip(k+' km','rad:'+k,(st.r||3)===k);}).join('')+(st.near?chip('清除','nearx'):'')+'</div><p class="note" style="margin:6px 2px 0">只顯示離這個地點直線距離內的飯店。沒填城市也可以，會自動判斷。</p></details>';}
+function hav(a,b,c,d){var R=6371,x=(c-a)*Math.PI/180,y=(d-b)*Math.PI/180,h=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(y/2)*Math.sin(y/2);return 2*R*Math.asin(Math.sqrt(h));}
+function geo(q){return fetch(RELAY+'/geo?q='+encodeURIComponent(q)).then(function(r){return r.json();}).then(function(j){if(j.ok)return j;throw 0;}).catch(function(){
+  return fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=1&accept-language=en&q='+encodeURIComponent(q)).then(function(r){return r.json();}).then(function(a){a=a[0];if(!a)return null;var ad=a.address||{};return {ok:true,lat:+a.lat,lng:+a.lon,name:a.name||q,city:ad.city||ad.town||ad.village||ad.county||ad.state||'',region:(ad.state||'').replace(/ (Prefecture|Province|County)$/,'')};});}).catch(function(){return null;});}
+function quick(){
+  var t=today(),d=new Date(t+'T00:00:00Z').getUTCDay(),fri=addDays(t,((5-d+7)%7)||7);
+  var q=[['本週末',fri,addDays(fri,2)],['下週末',addDays(fri,7),addDays(fri,9)],['2 週後 3 晚',addDays(t,14),addDays(t,17)],['下個月 2 晚',addDays(t,30),addDays(t,32)]];
+  return '<div class="qk">'+q.map(function(x){return chip(x[0]+' <small style="font-weight:400">'+md(x[1])+'–'+md(x[2])+'</small>','qp:'+x[1]+':'+x[2],st.ci===x[1]&&st.co===x[2]);}).join('')+'</div>';
+}
+function calendar(){
+  var min=addDays(today(),0),max=addDays(today(),330),m=st.month||(st.ci||addDays(today(),1)).slice(0,7);
+  var y=+m.slice(0,4),mo=+m.slice(5,7),first=new Date(Date.UTC(y,mo-1,1)),n=new Date(Date.UTC(y,mo,0)).getUTCDate();
+  var prev=iso(new Date(Date.UTC(y,mo-2,1))).slice(0,7),next=iso(new Date(Date.UTC(y,mo,1))).slice(0,7);
+  var h='<div class="cal-head"><button data-act="cm:'+prev+'"'+(prev<min.slice(0,7)?' disabled':'')+'>‹ 上個月</button><b>'+y+' 年 '+mo+' 月</b><button data-act="cm:'+next+'"'+(next>max.slice(0,7)?' disabled':'')+'>下個月 ›</button></div><div class="grid">';
+  '日一二三四五六'.split('').forEach(function(w){h+='<div class="w">'+w+'</div>';});
+  for(var i=0;i<first.getUTCDay();i++)h+='<div></div>';
+  for(var d=1;d<=n;d++){var s=m+'-'+('0'+d).slice(-2),cls='d';
+    if(s===st.ci||s===st.co)cls+=' end';else if(st.ci&&st.co&&s>st.ci&&s<st.co)cls+=' in';
+    h+='<button class="'+cls+'" data-act="cd:'+s+'"'+(s<min||s>max?' disabled':'')+'>'+d+'</button>';}
+  var nn=st.ci&&st.co?nights(st.ci,st.co):0;
+  h+='</div><p class="sel">'+(st.ci?(st.co?'入住 '+md(st.ci)+'（'+wd(st.ci)+'）→ 退房 '+md(st.co)+'（'+wd(st.co)+'）・<b>'+nn+' 晚</b>':'入住 '+md(st.ci)+'（'+wd(st.ci)+'），👉 再點退房日期'):'👉 先點入住日期')+'</p>';
+  return h+'<button class="btn" data-act="calok"'+(nn?'':' disabled')+'>'+(nn?'🔍 查 '+esc(st.city)+' '+nn+' 晚的飯店':'先選入住和退房')+'</button>';
+}
+function srcBadge(){if(!R)return '';var t=R.fetched?new Date(new Date(R.fetched).getTime()+8*3600e3).toISOString().slice(5,16).replace('-','/').replace('T',' '):'';
+  if(R.example)return '<div class="srcb st">⚠️ 範例資料（即時來源暫時無法使用）</div>';
+  if(R.stale)return '<div class="srcb st">🕘 暫存資料・'+t+'（即時來源暫時無法使用）</div>';
+  var nm={trip:'Trip.com','trip-tw':'Trip.com（備援網域）',google:'Google 飯店（備援）'}[R.source]||R.source;
+  return '<div class="srcb'+(R.source==='trip'?'':' bk')+'">✅ 即時・'+esc(nm)+'・'+t+'</div>';}
+function results(){
+  var nn=nights(st.ci,st.co),h='<div class="panel" style="padding:10px 14px"><button class="back" data-act="s:cal" style="padding-bottom:0">‹ '+esc(st.city)+'・'+md(st.ci)+'–'+md(st.co)+'・'+nn+' 晚</button>'+
+   '<div class="ddrow">'+ddBtn('👥 '+st.g+' 人','dd:g')+ddBtn('💰 '+(BUDS.filter(function(b){return b[0]===st.budget;})[0]||BUDS[0])[1],'dd:bd')+ddBtn((st.pt==='villa'?'🏡 包棟':'🎛️ 篩選')+((st.af||[]).length?'・'+st.af.length:''),'dd:filt')+'</div></div>';
+  if(LOADING)return h+'<div class="card"><div class="empty" style="background:none">⏳ 正在查 '+esc(st.city)+' 的即時房價…</div></div>';
+  if(!R)return h;
+  var list=(R.hotels||[]).filter(function(x){return x.price>0&&(!st.budget||x.price<=st.budget);});
+  list.forEach(function(x){if(x.stationM!=null&&(/airport/i.test(x.station||'')||x.stationM>5000)){x.stationM=null;x.station='';}});
+  list.forEach(function(x){x.cp=cpScore(x);});
+  var AF=(st.af||[]),AFH=0;if(AF.length){var srv=['breakfast','spa','washer','gym','parking'];list=list.filter(function(x){var need=AF.filter(function(k){return srv.indexOf(k)<0||!R.am;});if(!need.length)return true;if(!amKnown(x)){AFH++;return false;}return need.every(function(k){return amHas(x,k);});});}
+  var pz=list.map(function(x){return x.price;}).sort(function(a,b){return a-b;});PMED=pz[Math.floor(pz.length/2)]||0;
+  var NG=st.near&&st.geo&&!st.geo.fail?st.geo:null,nearAll=list.length;if(NG){list.forEach(function(x){x.nearKm=x.lat?Math.round(hav(NG.lat,NG.lng,x.lat,x.lng)*10)/10:null;});list=list.filter(function(x){return x.nearKm!=null&&x.nearKm<=(st.r||3);});}
+  var LUXN='';if(st.sort==='lux'){var before=list.length;list=list.filter(function(x){var pt=ptype(x);return x.stars>=4&&!pt;});LUXN=list.length<8?'豪華五星只找到 '+list.length+' 間 4–5★ 正規飯店（已排除青旅、膠囊、民宿、公寓、Villa）。':'';
+    list.forEach(function(x){x.lux=Math.round(((x.stars||4)*1.5+adjR(x))*convF(x)*100+Math.log10(x.price||1)*5);});}
+  list.sort({cp:function(a,b){return b.cp-a.cp;},price:function(a,b){return a.price-b.price;},rating:function(a,b){return adjR(b)-adjR(a);},pop:function(a,b){return popS(b)-popS(a)||b.cp-a.cp;},dist:function(a,b){return (a.nearKm==null?9e9:a.nearKm)-(b.nearKm==null?9e9:b.nearKm)||b.cp-a.cp;},lux:function(a,b){return (b.lux||0)-(a.lux||0)||b.price-a.price;},walk:function(a,b){var x=a.stationM==null?9e9:a.stationM,y=b.stationM==null?9e9:b.stationM;return x-y||b.cp-a.cp;}}[st.sort]);
+  if(st.sort==='dist'&&!NG){st.sort='pop';}
+  window.VIEW=list;
+  h+=(FROMFLY?'<span class="chip" style="display:inline-block;margin:0 6px 8px 0;border-color:#388153;color:#388153">✈️ 從飛省帶入</span>':'')+srcBadge()+'<div class="ddrow" style="margin:0 0 10px">'+ddBtn('排序：'+((sortOpts().filter(function(o){return o[0]===st.sort;})[0]||sortOpts()[0])[1]),'dd:sort')+'</div>';
+  if(st.near)h+='<div class="apc" style="margin:-4px 0 10px">'+(NG?'<span>📍 '+esc(st.near)+' 半徑 '+(st.r||3)+' km・'+list.length+' 間</span>':'<span>📍 找不到「'+esc(st.near)+'」的位置，先顯示全部</span>')+'</div>';
+  if(NG&&!list.length){var nx=[3,5,10,20].filter(function(k){return k>(st.r||3);});return h+'<div class="empty">半徑 '+(st.r||3)+' km 內沒有找到飯店（這次共查到 '+nearAll+' 間，都比較遠）。<div class="chips" style="justify-content:center;margin-top:10px">'+nx.map(function(k){return chip('擴大到 '+k+' km','rad:'+k);}).join('')+chip('不限距離','nearx')+'</div></div>';}
+  if(LUXN)h+='<p class="note" style="margin:-4px 2px 10px">💎 '+LUXN+'</p>';if(AFH)h+='<p class="note" style="margin:-4px 2px 10px">🎛️ 另有 '+AFH+' 間查不到設施資料，已先隱藏。</p>';
+  if(!list.length&&R.villa)return h+'<div class="empty">這個城市目前查不到包棟／Villa 的房源，可以換個城市或切回「🏨 飯店」。</div>';
+  if(!list.length&&(st.af||[]).length)return h+'<div class="empty">沒有符合所選設施的住宿，試著減少篩選條件。<div class="chips" style="justify-content:center;margin-top:10px">'+chip('清除篩選','afclr2')+'</div></div>';
+  if(!list.length)return h+'<div class="empty">'+((R.hotels||[]).length?'預算內沒有飯店，試試「不限預算」。':'目前查不到「'+esc(st.city)+'」的房價，請換個城市或稍後再試。')+'</div>';
+  var saved=MYQ.some(function(q){return q.city===st.city&&q.ci===st.ci&&q.co===st.co&&q.g===st.g;});
+  h+=list.map(function(x,i){return '<div class="card hc" data-act="hd:'+i+'">'+(pics(x).length?'<div class="hero"><img loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="" src="'+esc(pics(x)[0])+'" onerror="this.parentNode.style.display=\'none\'">'+(pics(x).length>1?'<span class="pn">📷 '+pics(x).length+'</span>':'')+'</div>':'')+'<h3>'+esc(x.name)+(ptype(x)&&!R.villa?' <span class="ptag">'+ptype(x)+'</span>':'')+'</h3>'+(R.villa?'<div class="vln">🏡 '+[x.cap?'可住 '+x.cap+' 人':'',x.beds?x.beds+' 房':'',/private pool|private villa pool|私人泳池/i.test(amText(x))?'私人泳池':''].filter(Boolean).join('・')+(st.g>1?'<span>每人每晚約 '+money(Math.round(x.price/st.g))+'</span>':'')+'</div>':'')+(st.sort==='pop'&&x.rating?'<div data-act="rv:'+i+'" style="font-size:15px;font-weight:800;color:var(--accent,#C2410C);margin:2px 0 4px;cursor:pointer">'+(i===0?'🏆 ':'👍 ')+(x.reviews||0).toLocaleString()+' 人評論・'+x.rating.toFixed(1)+'</div>':'')+'<div class="mt">'+(x.rating?'<span class="rt" data-act="rv:'+i+'">'+x.rating.toFixed(1)+'</span>'+(st.sort==='pop'?'':'<span data-act="rv:'+i+'" style="text-decoration:underline dotted;cursor:pointer">'+(x.reviews||0).toLocaleString()+' 則評論 ›</span>')+(x.reviews<100?'<span style="color:var(--tip)">・評論較少</span>':''):'<span>尚無評分</span>')+(x.stars?'<span>'+'★'.repeat(x.stars)+'</span>':'')+'</div>'+(x.nearKm!=null?'<div class="mt" style="margin-top:4px;color:var(--accent,#C2410C);font-weight:700"><span>📍 距 '+esc(st.near)+' '+x.nearKm+' km</span></div>':'')+(x.stationM!=null?'<div class="mt" style="margin-top:4px"><span>'+walkTxt(x)+'</span><span>・'+esc(stName(x.station))+'</span>'+(x.centerKm!=null?'<span>・離市中心 '+x.centerKm+' km</span>':'')+'</div>':'')+
+    apChips(x,3)+'<div class="pr"><div><b>'+money(x.price)+'</b><small>每晚・'+nn+' 晚共 '+money(x.price*nn)+'</small></div><a class="btn" target="_blank" rel="noopener" href="'+esc(bookUrl(x))+'" data-stop="1" data-pb="'+i+'">訂房 ›</a></div></div>';}).join('');
+  return h+'<button class="btn ghost" data-act="savq"'+(saved?' disabled':'')+'>'+(saved?'✓ 已存到「我的查詢」・降價會通知你':'🔔 存下這個查詢，降價通知我')+'</button>';
+}
+function bookUrl(x){return x.url||('https://tw.trip.com/hotels/list?keyword='+encodeURIComponent(x.name)+'&checkin='+st.ci+'&checkout='+st.co+'&adult='+st.g);}
+function runSearch(){if(st.near&&(!st.geo||st.geo.q!==st.near)){LOADING=true;R=null;st.step='result';render();var nq=st.near;
+    return geo(st.city?nq+' '+st.city:nq).then(function(g){if(st.near!==nq)return;st.geo=g?{q:nq,lat:g.lat,lng:g.lng,city:g.city}:{q:nq,fail:1};if(!st.city&&g&&(g.region||g.city))st.city=g.region||g.city;if(!st.city){LOADING=false;st.step='dest';toast('找不到這個地點，請再加上城市名稱');render();return;}saveSt();runSearch();});}
+  LOADING=true;R=null;st.step='result';saveSt();lss('fs_last',{city:st.city,ci:st.ci,co:st.co,g:st.g});render();
+  var q='city='+encodeURIComponent(st.city)+'&checkin='+st.ci+'&checkout='+st.co+'&guests='+st.g, my=JSON.stringify([st.city,st.ci,st.co,st.g]);
+  var done=function(j){if(JSON.stringify([st.city,st.ci,st.co,st.g])!==my)return;LOADING=false;R=j;render();};
+  var ex=function(){var raw=(window.FS_EXAMPLE||{})[st.city]||[];done({example:true,hotels:raw.map(function(r){return {name:r[0],stars:r[1],price:r[2],rating:r[3],reviews:r[4],area:r[5]};})});};
+  var SRVK={breakfast:'breakfast',spa:'spa',washer:'laundry',gym:'gym',parking:'parking'},amq=(st.pt==='villa'?[]:(st.af||[]).map(function(k){return SRVK[k];}).filter(Boolean)).join(','),xq=(st.sort==='lux'&&st.pt!=='villa'?'&lux=1':'')+(st.pt==='villa'?'&villa=1':'')+(amq?'&am='+amq:'');
+  my=JSON.stringify([st.city,st.ci,st.co,st.g,xq]);done=function(j){if(JSON.stringify([st.city,st.ci,st.co,st.g,xq])!==my)return;LOADING=false;j.am=amq;j.villa=st.pt==='villa';R=j;render();};
+  if(xq){q+=xq;return fetch(RELAY+'/?'+q).then(function(r){return r.json();}).then(function(j){done(j.hotels?j:{hotels:[]});}).catch(function(){done({hotels:[],err:1});});}
+  var viaRelay=function(){fetch(RELAY+'/?'+q).then(function(r){return r.json();}).then(function(j){if(j.hotels&&j.hotels.length)done(j);else ex();}).catch(ex);};
+  if(!API)return viaRelay();
+  fetch(API+'?action=hotels&'+q).then(function(r){return r.json();}).then(function(j){if(j.ok&&j.hotels&&j.hotels.length)done(j);else viaRelay();}).catch(viaRelay);   // 備援：Apps Script → Worker 直連 → 範例
+}
+
+/* ---------- 底部 sheet ---------- */
+function sheet(html){closeSheet(true);var bg=document.createElement('div');bg.className='shbg';bg.id='shbg';bg.dataset.act='shx';
+  var s=document.createElement('div');s.className='sheet';s.id='sheet';s.innerHTML='<div class="grab"></div>'+html;document.body.appendChild(bg);document.body.appendChild(s);
+  requestAnimationFrame(function(){bg.classList.add('on');s.classList.add('on');});}
+function closeSheet(now){var s=$('sheet'),b=$('shbg');if(!s)return;if(now){s.remove();b.remove();return;}s.classList.remove('on');b.classList.remove('on');setTimeout(function(){s.remove();b.remove();},280);}
+function hotelSheet(i){var x=VIEW[i],nn=nights(st.ci,st.co),q=encodeURIComponent(x.name+' '+st.city);
+  var ps=pics(x);sheet((ps.length?'<div class="gal">'+ps.map(function(u){return '<img loading="lazy" referrerpolicy="no-referrer" alt="" src="'+esc(u.replace(/_R_600_600/,'_R_960_660'))+'" onerror="this.remove()">';}).join('')+'</div>':'')+'<h2>'+esc(x.name)+'</h2><div class="mt" style="font-size:13px;color:#8A7766">'+(x.stars?'★'.repeat(x.stars)+'・':'')+esc(x.area||st.city)+'</div>'+apChips(x)+(x.ugc?'<p class="ugc">「'+esc(x.ugc)+'」<small>— Trip.com 住客評論摘要</small></p>':'')+(x.sub&&Object.keys(x.sub).length?'<div class="apc">'+Object.keys(x.sub).map(function(k){return '<span style="background:none">'+({Cleanliness:'清潔',Amenities:'設施',Location:'位置',Service:'服務',Room:'客房',Rooms:'客房'}[k]||esc(k))+' <b>'+x.sub[k]+'</b></span>';}).join('')+'</div>':'')+
+   mapBox(x.name,x.area||st.city,x.station,x.stationM,x.walkMin)+'<dl class="kv">'+(x.centerKm!=null?'<dt>離市中心</dt><dd>'+x.centerKm+' km</dd>':'')+'<dt>評分</dt><dd>'+x.rating+' / 10（'+(x.reviews||0).toLocaleString()+' 則）</dd><dt>每晚</dt><dd>'+money(x.price)+'</dd><dt>'+nn+' 晚合計</dt><dd>'+money(x.price*nn)+'</dd><dt>推薦分數</dt><dd>'+x.cp+'</dd><dt>日期</dt><dd>'+md(st.ci)+'（'+wd(st.ci)+'）→ '+md(st.co)+'（'+wd(st.co)+'）・'+st.g+' 人</dd></dl>'+
+   '<a class="btn" target="_blank" rel="noopener" href="'+esc(bookUrl(x))+'" style="text-decoration:none;text-align:center">前往訂房 ›</a>'+
+   '<div class="lk"><a target="_blank" rel="noopener" href="https://www.booking.com/searchresults.zh-tw.html?ss='+q+'&checkin='+st.ci+'&checkout='+st.co+'&group_adults='+st.g+'">比價：Booking.com</a><a target="_blank" rel="noopener" href="https://www.agoda.com/zh-tw/search?textToSearch='+q+'&checkIn='+st.ci+'&los='+nn+'&adults='+st.g+'">比價：Agoda</a>'+
+   '<button data-act="booked:'+i+'">🧳 我訂了這間，加到「我的住宿」</button></div><p class="note" style="margin-top:12px">價格以訂房網站顯示為準。</p>');}
+
+/* ---------- 我的查詢（照飛省：每台裝置一份，存在伺服器） ---------- */
+function post(body){if(!API)return Promise.reject(new Error('no api'));body.dev=DEV;return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)}).then(function(r){return r.json();});}
+function syncFrom(j){if(!j||!j.ok)return;if(typeof j.push==='boolean'&&!syncFrom.pc){syncFrom.pc=1;pushCheck(j.push);}if(j.searches&&!j.searches.length&&MYQ.length&&!syncFrom.up){syncFrom.up=1;MYQ.slice().reverse().forEach(function(q){post({action:'saveSearch',q:q,base:q.base||0,top:q.top||[]}).catch(function(){});});j.searches=MYQ;}
+  if(j.alerts&&!j.alerts.length&&ALERTS.length)j.alerts=ALERTS;if(j.searches){MYQ=j.searches;lss('fs_myq',MYQ);}if(j.alerts){ALERTS=j.alerts;lss('fs_alerts',ALERTS);}nfyDot();render();}
+function mine(){
+  var h='<div class="panel"><p class="step">📋 我的查詢</p><p class="note" style="margin:0">存下的查詢每天 09:00 自動重查，降價 5% 以上會發<b>系統通知</b>。最多 10 組。</p></div>';
+  if(!MYQ.length)return h+'<div class="empty">還沒有存下的查詢。<br>查完飯店後按「🔔 存下這個查詢」。</div><button class="btn" data-act="tab:search">🔍 去找飯店</button>';
+  return h+MYQ.map(function(q,i){var past=q.ci<today();return '<div class="card"><div class="dest" style="font-size:17px;font-weight:800">📍 '+esc(q.city)+'</div><p class="note" style="margin:4px 0 8px">'+md(q.ci)+'（'+wd(q.ci)+'）→ '+md(q.co)+'・'+nights(q.ci,q.co)+' 晚・'+q.g+' 人'+(q.base?'・存下時最低 '+money(q.base):'')+(past?'・<b style="color:var(--tip)">已過期</b>':'')+'</p>'+
+    '<button class="btn" data-act="qo:'+i+'" style="margin-top:0">查看最新價格</button><div class="tgl"><span>🔔 降價通知</span><button class="sw'+(q.notify!==false?' on':'')+'" data-act="qn:'+i+'" aria-label="降價通知"></button></div>'+chip('刪除','qd:'+i).replace('class="chip"','class="chip mfdel"')+'</div>';}).join('');
+}
+/* ---------- 降價通知（系統通知 Web Push） ---------- */
+function alertsView(){
+  var h=notifyPanel();
+  if(!ALERTS.length)return h+'<div class="empty">還沒有通知。<br>存下查詢後，降價時會出現在這裡。</div>';
+  return h+'<div class="panel"><p class="step">🔔 通知紀錄</p>'+ALERTS.map(function(a,i){return '<button class="mopt" data-act="al:'+i+'"><span class="ic">'+(a.id&&a.id[0]==='t'?'🧪':a.id&&a.id[0]==='s'?'🧳':'📉')+'</span><span class="tx"><b>'+esc(a.title)+'</b><span>'+esc(a.body)+'</span></span><span class="ar">›</span></button>';}).join('')+'</div>'+chip('清除通知紀錄','alc').replace('class="chip"','class="chip mfdel"');
+}
+function pushSupported(){return 'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;}
+function notifyPanel(){
+  var ios=/iPhone|iPad/.test(navigator.userAgent)&&!navigator.standalone;
+  if(!pushSupported())return '<div class="panel"><p class="step">🔔 系統通知</p><p class="note" style="margin:0">'+(ios?'iPhone 要先用 Safari「分享 → 加入主畫面」，從主畫面打開飯省，才能開啟通知（iOS 16.4 以上）。':'這個瀏覽器不支援系統通知，請改用 Chrome、Edge 或 Safari。')+'</p></div>';
+  var on=PUSH==='on'&&Notification.permission==='granted';
+  return (PERR?'<div class="panel" style="color:var(--tip);font-size:13px">⚠️ 上次開啟失敗：'+esc(PERR)+'</div>':'')+'<div class="panel"><div class="tgl"><span><b style="font-size:16px">🔔 降價系統通知</b><br><span class="note" style="margin:0">'+(on?'已開啟：降價、入住前一天會跳出通知':Notification.permission==='denied'?'通知被封鎖：請到瀏覽器網址列左邊 → 通知 → 允許':'關閉中')+'</span></span><button class="sw'+(on?' on':'')+'" data-act="push:'+(on?'off':'on')+'" aria-label="系統通知"></button></div>'+
+   (on?'<button class="btn ghost" data-act="ptest" style="margin-top:4px">🧪 傳一則測試通知</button>':'')+'</div>';
+}
+function b64ToU8(s){s=s.replace(/-/g,'+').replace(/_/g,'/');var r=atob(s+'==='.slice((s.length+3)%4)),a=new Uint8Array(r.length);for(var i=0;i<r.length;i++)a[i]=r.charCodeAt(i);return a;}
+function errText(e){return (e&&(e.message||e.name))||String(e);}
+function curSub(){return navigator.serviceWorker.ready.then(function(r){return r.pushManager.getSubscription();});}
+function subscribeNow(){return navigator.serviceWorker.ready.then(function(reg){return fetch(RELAY+'/vapid').then(function(r){if(!r.ok)throw new Error('取不到推播金鑰（'+r.status+'）');return r.json();}).then(function(v){if(!v.key)throw new Error('推播金鑰未設定');
+    return reg.pushManager.getSubscription().then(function(s){
+      if(s&&s.options&&s.options.applicationServerKey){var a=new Uint8Array(s.options.applicationServerKey),b=b64ToU8(v.key);if(a.length!==b.length||a.some(function(x,i){return x!==b[i];}))return s.unsubscribe().then(function(){return null;});}return s;})
+    .then(function(s){return s||reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToU8(v.key)});});});});}
+function saveSub(sub){return post({action:'subscribe',sub:sub.toJSON()}).then(function(j){if(!j||!j.ok)throw new Error('伺服器沒有存到：'+((j&&j.error)||'未知錯誤'));return j;});}
+/* 開啟時與伺服器對帳：權限允許＋裝置有訂閱、但伺服器沒有 → 自動重存；裝置沒訂閱 → 顯示關閉 */
+function pushCheck(serverHas){if(!pushSupported()||!API)return;
+  if(Notification.permission!=='granted'){if(PUSH!=='off'){PUSH='off';lss('fs_push','off');render();}return;}
+  curSub().then(function(sub){
+    if(!sub){if(PUSH==='on'){PUSH='off';lss('fs_push','off');render();}return;}
+    if(serverHas){if(PUSH!=='on'){PUSH='on';lss('fs_push','on');render();}return;}
+    return saveSub(sub).then(function(){PUSH='on';lss('fs_push','on');swDev();render();});
+  }).catch(function(e){PUSH='off';lss('fs_push','off');PERR=errText(e);render();});}
+var PERR='';
+function pushOn(){
+  if(!API){toast('伺服器未設定');return;}
+  PERR='';toast('開啟中…');
+  Notification.requestPermission().then(function(p){if(p!=='granted')throw new Error(p==='denied'?'通知被封鎖，請到網址列左邊 → 權限 → 通知 → 允許':'沒有允許通知');return subscribeNow();})
+   .then(saveSub).then(function(){PUSH='on';lss('fs_push','on');swDev();toast('✅ 已開啟系統通知');render();})
+   .catch(function(e){PUSH='off';lss('fs_push','off');PERR=errText(e);toast('⚠️ '+PERR);render();});
+}
+function pushOff(){navigator.serviceWorker.ready.then(function(r){return r.pushManager.getSubscription();}).then(function(s){if(s)s.unsubscribe();}).catch(function(){});post({action:'unsubscribe'}).catch(function(){});PUSH='off';lss('fs_push','off');toast('已關閉通知');render();}
+function swDev(){try{var o=indexedDB.open('fansave',1);o.onupgradeneeded=function(){o.result.createObjectStore('kv');};o.onsuccess=function(){var tx=o.result.transaction('kv','readwrite');tx.objectStore('kv').put({dev:DEV,api:API},'meta');};}catch(e){}}
+
+/* ---------- 我的住宿（照飛省「我的航班」：存在這台裝置） ---------- */
+var AMI=[[/wi-?fi|internet|網路/i,'📶 Wi-Fi'],[/breakfast|早餐/i,'🍳 早餐'],[/parking|停車/i,'🅿️ 停車'],[/pool|游泳/i,'🏊 泳池'],[/shuttle|接駁/i,'🚐 機場接駁'],[/gym|fitness|健身/i,'🏋️ 健身房'],[/laundry|洗衣/i,'🧺 洗衣'],[/restaurant|餐廳/i,'🍽️ 餐廳'],[/luggage|行李/i,'🧳 行李寄放'],[/spa|onsen|溫泉|bath/i,'♨️ 溫泉/SPA'],[/air condition|空調/i,'❄️ 空調'],[/elevator|電梯/i,'🛗 電梯']];
+function amen(list){var out=[];AMI.forEach(function(a){if((list||[]).some(function(x){return a[0].test(x);}))out.push(a[1]);});return out;}
+function stays(){
+  var h='<div class="panel"><p class="step">🧳 我訂購的飯店</p><button class="btn" data-act="snew" style="margin-top:4px">＋ 新增住宿</button><input type="file" id="shotin" accept="image/*" hidden><p class="note" style="margin:8px 2px 0">可以直接貼上訂房確認信，自動帶入飯店、日期、確認號碼。會自動補上<b>入住／退房時間、設施、地址</b>。入住前一天、退房當天早上會提醒你。資料存在這台裝置。</p></div>';
+  if(!STAYS.length)return h+'<div class="empty">還沒有訂購的飯店。</div>';
+  var t=today();
+  return h+STAYS.slice().sort(function(a,b){return a.ci<b.ci?-1:1;}).map(function(s){var i=STAYS.indexOf(s),d=DET[s.name]||{},dd=nights(t,s.ci),past=s.co<t;
+    var cd=past?'已退房':dd>0?'還有 <span class="cd">'+dd+'</span> 天入住':dd===0?'<span class="cd">今天</span>入住':'入住中・'+md(s.co)+' 退房';
+    var mp=d.lat?'https://www.google.com/maps/search/?api=1&query='+d.lat+','+d.lng:'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.name+' '+(d.address||s.city||''));
+    var am=amen(d.amenities);
+    return '<div class="card"'+(past?' style="opacity:.6"':'')+'>'+(d.hotelId&&d.gallery&&d.gallery[0]?'<div class="hero"><img loading="lazy" referrerpolicy="no-referrer" alt="" src="'+esc(d.gallery[0])+'" onload="if(this.naturalWidth<320)this.parentNode.remove()" onerror="this.parentNode.remove()"></div><div class="sth"><div class="stn">'+esc(s.name)+'</div></div>':'<div class="sth"><span class="sti" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 19V7m0 7h18v5M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="2"/></svg></span><div class="stn">'+esc(s.name)+'</div></div>')+'<p style="margin:6px 0">'+cd+'</p>'+
+     '<dl class="kv"><dt>入住</dt><dd>'+md(s.ci)+'（'+wd(s.ci)+'）'+esc((s.tgen&&d.checkin)||s.cit||d.checkin||'')+((s.cit||d.checkin)&&!/-/.test((s.tgen&&d.checkin)||s.cit||d.checkin)?' 起':'')+'</dd><dt>退房</dt><dd>'+md(s.co)+'（'+wd(s.co)+'）'+(s.cot||d.checkout?esc((s.tgen&&d.checkout)||s.cot||d.checkout)+' 前':'')+'</dd>'+
+     (s.conf?'<dt>確認號碼</dt><dd>'+esc(s.conf)+'</dd>':'')+(s.room?'<dt>房型</dt><dd>'+esc(s.room)+'</dd>':'')+(s.note?'<dt>備註</dt><dd>'+esc(s.note)+'</dd>':'')+(s.guest?'<dt>住客</dt><dd>'+esc(s.guest)+'</dd>':'')+'<dt>人數</dt><dd>'+(s.g||2)+' 人</dd>'+(s.price?'<dt>總價</dt><dd>'+(s.cur&&s.cur!=='TWD'?esc(s.cur)+' '+s.price.toLocaleString():money(s.price))+'</dd>':'')+(s.plat?'<dt>訂房平台</dt><dd>'+esc(s.plat)+'</dd>':'')+
+     (s.cancel?'<dt>免費取消至</dt><dd style="color:var(--tip)">'+esc(s.cancel)+'</dd>':'')+(d.address||s.addr?'<dt>地址</dt><dd style="font-weight:400">'+esc(s.addr?cleanAddr(s.addr):d.address)+'</dd>':'')+(s.phone||d.phone?'<dt>電話</dt><dd><a href="tel:'+esc(s.phone||d.phone)+'">'+esc(s.phone||d.phone)+'</a></dd>':'')+'</dl>'+
+     mapBox(s.name,d.address||s.area||s.city||'',s.station||d.station,s.stationM!=null?s.stationM:d.stationM,s.walkMin||d.walkMin)+
+     (am.length?'<div class="am">'+am.map(function(a){return '<span>'+a+'</span>';}).join('')+'</div>':'')+
+     (d.loading?'<p class="note">⏳ 正在補上飯店資料…</p>':d.sources&&!d.checkin&&!s.cit?'<p class="note">查不到入住時間，可以按「編輯」自己填。</p>':'')+
+     '<div class="chips" style="margin-top:8px"><a class="chip" style="text-decoration:none;display:inline-flex;align-items:center" target="_blank" rel="noopener" href="'+esc(flyUrl(s))+'">✈️ 查機票</a>'+chip('✏️ 編輯','se:'+i)+chip('刪除','sd:'+i).replace('class="chip"','class="chip mfdel"')+'</div></div>';}).join('');
+}
+function stayForm(s,i){s=s||{g:2};window.PRESTAY=s;
+  sheet('<h2>'+(i>=0?'編輯':'加入')+'訂購的飯店</h2><label class="fld">📩 貼上訂房確認信（選填，自動帶入）<textarea id="sf_mail" placeholder="把確認信的文字整段貼上"></textarea></label><button class="btn ghost" data-act="sparse" style="margin:0 0 12px">✨ 自動帶入</button>'+
+   '<label class="fld">飯店名稱<input id="sf_name" value="'+esc(s.name||'')+'" placeholder="例如：三井花園飯店銀座"></label><label class="fld">城市<input id="sf_city" value="'+esc(s.city||'')+'"></label>'+
+   '<div style="display:flex;gap:8px"><label class="fld" style="flex:1">入住日<input id="sf_ci" type="date" value="'+esc(s.ci||'')+'"></label><label class="fld" style="flex:1">退房日<input id="sf_co" type="date" value="'+esc(s.co||'')+'"></label></div>'+
+   '<div style="display:flex;gap:8px"><label class="fld" style="flex:1">入住時間<input id="sf_cit" placeholder="自動" value="'+esc(s.cit||'')+'"></label><label class="fld" style="flex:1">退房時間<input id="sf_cot" placeholder="自動" value="'+esc(s.cot||'')+'"></label></div>'+
+   '<label class="fld">確認號碼<input id="sf_conf" value="'+esc(s.conf||'')+'"></label><label class="fld">房型<input id="sf_room" value="'+esc(s.room||'')+'"></label>'+
+   '<div style="display:flex;gap:8px"><label class="fld" style="flex:1">人數<input id="sf_g" type="number" min="1" max="8" value="'+(s.g||2)+'"></label><label class="fld" style="flex:1">總價 NT$<input id="sf_price" type="number" value="'+esc(s.price||'')+'"></label></div>'+
+   '<label class="fld">免費取消期限<input id="sf_cancel" placeholder="例如 11/17 23:59" value="'+esc(s.cancel||'')+'"></label><label class="fld">飯店電話<input id="sf_phone" type="tel" value="'+esc(s.phone||'')+'"></label><label class="fld">地址<input id="sf_addr" value="'+esc(s.addr||'')+'"></label><div style="display:flex;gap:8px"><label class="fld" style="flex:1">住客姓名<input id="sf_guest" value="'+esc(s.guest||'')+'"></label><label class="fld" style="flex:1">備註<input id="sf_note" placeholder="例如 不含早餐" value="'+esc(s.note||'')+'"></label></div>'+
+   '<button class="btn" data-act="ssave:'+(i>=0?i:-1)+'">💾 儲存</button>');}
+function parseMail(t){var o={},dt=[],m,re=/(20\d\d)[\/\-年.](\d{1,2})[\/\-月.](\d{1,2})/g;while((m=re.exec(t)))dt.push(m[1]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[3]).slice(-2));
+  dt=dt.filter(function(x,i){return dt.indexOf(x)===i;}).sort();if(dt.length>=2){o.ci=dt[0];o.co=dt[1];}
+  var cf=t.match(/(?:確認(?:號碼|編號)|訂單(?:編號|號碼)|預訂編號|booking (?:number|id|no\.?)|confirmation(?: number| no\.?| code)?|reservation (?:number|no\.?))[\s:：#]*([A-Z0-9][A-Z0-9\-]{4,})/i);if(cf)o.conf=cf[1];
+  var hn=t.match(/(?:飯店|酒店|住宿|hotel name|property)[\s:：]*([^\n]{3,60})/i)||t.match(/^([^\n]*(?:Hotel|Inn|Resort|飯店|酒店|ホテル)[^\n]{0,30})$/im);if(hn)o.name=hn[1].trim();
+  var pr=t.match(/(?:NT\$|TWD|NTD)\s?([\d,]{3,})/i);if(pr)o.price=+pr[1].replace(/,/g,'');
+  var rm=t.match(/(?:房型|room type|room)[\s:：]*([^\n]{3,50})/i);if(rm)o.room=rm[1].trim();
+  var ca=t.match(/(?:免費取消|free cancellation)[^\n]{0,15}?(\d{1,4}[\/\-年]\d{1,2}[\/\-月]?\d{0,2}[^\n]{0,12})/i);if(ca)o.cancel=ca[1].trim();
+  var gs=t.match(/(\d)\s*(?:位成人|大人|adults?)/i);if(gs)o.g=+gs[1];var ph=t.match(/(?:電話|tel|phone)[\s:：]*(\+?[\d\- ()]{7,})/i);if(ph)o.phone=ph[1].trim();return o;}
+/* ---------- 截圖辨識（Tesseract.js，在手機上辨識，圖片不上傳） ---------- */
+var TESS=null;function loadTess(){if(window.Tesseract)return Promise.resolve();return TESS||(TESS=new Promise(function(ok,no){var sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';sc.onload=ok;sc.onerror=function(){TESS=null;no(new Error('load'));};document.head.appendChild(sc);}));}
+function prepImg(file){return new Promise(function(ok){var u=URL.createObjectURL(file),im=new Image();im.onload=function(){try{var sc=Math.max(im.width,im.height)<1000?Math.min(2,1400/Math.max(im.width,im.height)):1,w=Math.round(im.width*sc),h=Math.round(im.height*sc),c=document.createElement('canvas');c.width=w;c.height=h;var x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(im,0,0,w,h);
+  var d=x.getImageData(0,0,w,h),a=d.data,hist=new Uint32Array(256),i,g;for(i=0;i<a.length;i+=4){g=(a[i]*299+a[i+1]*587+a[i+2]*114)/1000|0;a[i]=g;hist[g]++;}
+  var n=w*h,lo=0,hi=255,acc=0;for(i=0;i<256;i++){acc+=hist[i];if(acc>n*0.01){lo=i;break;}}acc=0;for(i=255;i>=0;i--){acc+=hist[i];if(acc>n*0.01){hi=i;break;}}var rg=Math.max(1,hi-lo);if(rg>=110){lo=0;rg=255;}
+  for(i=0;i<a.length;i+=4){g=Math.max(0,Math.min(255,(a[i]-lo)*255/rg));a[i]=a[i+1]=a[i+2]=g;}x.putImageData(d,0,0);URL.revokeObjectURL(u);ok(c);}catch(e){ok(file);}};im.onerror=function(){ok(file);};im.src=u;});}
+function textImport(t){var o=parseShot(t),n=Object.keys(o).filter(function(k){return o[k];}).length;tab='stays';render();stayForm(Object.assign({g:2},o),-1);var ta=$('sf_mail');if(ta)ta.value=t;toast(n>2?'✨ 已帶入 '+n+' 個欄位，請確認後儲存':'找到的資料不多，請手動補上');}
+function shareIn(){var q=new URLSearchParams(location.search);
+  if(q.get('share')==='1'){history.replaceState(null,'',location.pathname);if(!window.caches)return;caches.open('fansave-share').then(function(c){return c.match('/fansave/__share').then(function(r){if(!r)return;return r.json().then(function(m){
+    var go=function(){c.delete('/fansave/__share');c.delete('/fansave/__share_img');};
+    if(m.img)return c.match('/fansave/__share_img').then(function(ri){return ri.blob();}).then(function(b){go();tab='stays';render();ocrShot(b);});
+    go();var t=[m.title,m.text,m.url].filter(Boolean).join('\n');if(t)textImport(t);});});});return true;}
+  var tx=[q.get('title'),q.get('text'),q.get('url')].filter(Boolean).join('\n');if(tx&&!q.get('city')&&!q.get('near')){history.replaceState(null,'',location.pathname);textImport(tx);return true;}}
+function ocrShot(file){var pct=function(t){var e=$('ocrp');if(e)e.textContent=t;};
+  sheet('<h2>📷 辨識訂房截圖</h2><p id="ocrp" style="font-weight:700;color:#9A3412">準備中…</p><p class="note">🔒 圖片只在你的手機上辨識，<b>不會上傳、不會儲存</b>。第一次使用需下載辨識模型（約 10 MB），之後會快很多。</p>');
+  loadTess().then(function(){pct('處理圖片…');return prepImg(file);}).then(function(img){pct('下載辨識模型…');return Tesseract.recognize(img,'chi_tra+jpn+eng',{logger:function(m){if(m.status==='recognizing text')pct('辨識中… '+Math.round(m.progress*100)+'%');else if(/load/.test(m.status))pct('下載辨識模型… '+Math.round((m.progress||0)*100)+'%');}});})
+  .then(function(res){var t=(res.data&&res.data.text)||'';var o=parseShot(t);var n=Object.keys(o).filter(function(k){return o[k];}).length;closeSheet(true);
+    stayForm(Object.assign({g:2},o),-1);var ta=$('sf_mail');if(ta)ta.value=t;toast(n>2?'✨ 已帶入 '+n+' 個欄位，請確認後儲存':'辨識到的資料不多，請手動補上');})
+  .catch(function(){closeSheet(true);toast('辨識失敗，請改用手動新增或貼上確認信');});}
+function cleanAddr(a){a=String(a||'').trim();if(/[\u3040-\u9fff]/.test(a)){var m=a.match(/^(.*[\u3040-\u9fff][\d\-－−丁目番地號号之 ]*)/);if(m)a=m[1].trim();}
+  a=a.replace(/(?<![\d-])(\d+(?:-\d+){1,3})\s*\1(?![\d-])/g,'$1').replace(/(\S{4,})\s+\1/g,'$1');return a.replace(/[,，\s]+$/,'');}
+function parseShot(t){t=String(t||'').replace(/[ \t]+/g,' ').replace(/(\d) (?=\d)/g,'$1');var tc=t.replace(/(?<=[\u4e00-\u9fff]) (?=[\u4e00-\u9fff])/g,'');var o=parseMail(tc),y=new Date().getFullYear(),M={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12},dt=[],m;
+  var pad=function(n){return ('0'+n).slice(-2);},add=function(Y,Mo,D){if(Mo<1||Mo>12||D<1||D>31)return;if(!Y){Y=y;if(Y+'-'+pad(Mo)+'-'+pad(D)<today())Y++;}dt.push(Y+'-'+pad(Mo)+'-'+pad(D));};
+  var re1=/(20\d\d)\s*[\/\-年.]\s*(\d{1,2})\s*[\/\-月.]\s*(\d{1,2})/g;while((m=re1.exec(tc)))add(+m[1],+m[2],+m[3]);
+  if(!dt.length){var re2=/(\d{1,2})\s*月\s*(\d{1,2})\s*日/g;while((m=re2.exec(tc)))add(0,+m[1],+m[2]);}
+  var re3=/(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?,?\s+(20\d\d)/gi;while((m=re3.exec(t)))add(+m[3],M[m[2].toLowerCase()],+m[1]);
+  var re4=/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(\d{1,2}),?\s+(20\d\d)/gi;while((m=re4.exec(t)))add(+m[3],M[m[1].toLowerCase()],+m[2]);
+  dt=dt.filter(function(x,i){return dt.indexOf(x)===i;}).sort();if(dt.length>=2){o.ci=dt[0];o.co=dt[dt.length>2?1:1];}
+  var ti=function(re){var x=tc.match(re);if(!x)return '';var h=+x[1];if(/pm/i.test(x[3]||'')&&h<12)h+=12;if(/am/i.test(x[3]||'')&&h===12)h=0;return pad(h)+':'+x[2];};
+  o.cit=ti(/(?:入住|check-?in|チェックイン)[^\n]{0,60}?(\d{1,2})[:：](\d{2})\s*(am|pm)?/i);o.cot=ti(/(?:退房|check-?out|チェックアウト)[^\n]{0,60}?(\d{1,2})[:：](\d{2})\s*(am|pm)?/i);
+  var dOf=function(line){var x;if((x=line.match(/(20\d\d)\s*[\/\-年.]\s*(\d{1,2})\s*[\/\-月.]\s*(\d{1,2})/)))return x[1]+'-'+pad(+x[2])+'-'+pad(+x[3]);
+    if((x=line.match(/(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?,?\s+(20\d\d)/i)))return x[3]+'-'+pad(M[x[2].toLowerCase()])+'-'+pad(+x[1]);
+    if((x=line.match(/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(\d{1,2}),?\s+(20\d\d)/i)))return x[3]+'-'+pad(M[x[1].toLowerCase()])+'-'+pad(+x[2]);
+    if((x=line.match(/(\d{1,2})\s*月\s*(\d{1,2})\s*日/))){var Y=y,d=Y+'-'+pad(+x[1])+'-'+pad(+x[2]);if(d<today())d=(Y+1)+d.slice(4);return d;}return '';};
+  tc.split('\n').forEach(function(line){if(/入住|check-?in|チェックイン/i.test(line)&&!/退房|check-?out|チェックアウト/i.test(line)){var d=dOf(line);if(d&&!o._ci)o._ci=d;}if(/退房|check-?out|チェックアウト/i.test(line)&&!/入住日期.*退房|check in n out/i.test(line)){var d2=dOf(line);if(d2&&!o._co)o._co=d2;}});
+  if(o._ci&&o._co&&o._co>o._ci){o.ci=o._ci;o.co=o._co;}delete o._ci;delete o._co;
+  var cur=[[/(?:NT\s?[\$S]|TWD|NTD|新台幣)\s?([\d,]{3,})/i,'TWD'],[/(?:JPY|¥|￥|円)\s?([\d,]{3,})|([\d,]{3,})\s?(?:円|日圓)/i,'JPY'],[/(?:KRW|₩)\s?([\d,]{4,})/i,'KRW'],[/(?:US\$|USD)\s?([\d,.]{2,})/i,'USD'],[/(?:HK\$|HKD)\s?([\d,.]{2,})/i,'HKD'],[/(?:THB|฿)\s?([\d,.]{3,})/i,'THB']];
+  var tot=tc.match(/(?:總價|總金額|總計|合計|total(?: price| amount)?|amount paid)[^\n]{0,30}/i),pz=(tot?tot[0]+'\n':'')+tc;
+  for(var i=0;i<cur.length;i++){var x=pz.match(cur[i][0]);if(x){o.price=+String(x[1]||x[2]).replace(/,/g,'').split('.')[0];o.cur=cur[i][1];break;}}
+  var pl=[[/agoda/i,'Agoda'],[/booking\.com/i,'Booking.com'],[/trip\.com|攜程/i,'Trip.com'],[/hotels\.com/i,'Hotels.com'],[/expedia/i,'Expedia'],[/airbnb/i,'Airbnb'],[/klook/i,'Klook'],[/楽天|rakuten/i,'樂天旅遊'],[/じゃらん|jalan/i,'じゃらん'],[/易遊網|eztravel/i,'易遊網'],[/雄獅|liontravel/i,'雄獅旅遊'],[/可樂旅遊|colatour/i,'可樂旅遊']];for(var j=0;j<pl.length;j++)if(pl[j][0].test(t)){o.plat=pl[j][1];break;}
+  var ad=tc.match(/(?:地址|住所|address)[\s:：]*([^\n]{6,90})/i);if(ad)o.addr=ad[1].trim();
+  var cf=tc.match(/(?:予約番号|itinerary\s*#?|訂單(?:編號|號碼)?|預訂編號|確認(?:號碼|編號)|booking (?:number|id|no\.?|reference)|confirmation(?: number| no\.?| code)?|reservation (?:number|no\.?)|order (?:number|no\.?))[\s:：#]*([A-Z0-9][A-Z0-9\-.]{4,})/i);if(cf)o.conf=cf[1].replace(/\.$/,'');
+  var g3=tc.match(/(?:成人|大人|adults?)\s*[:：]?\s*(\d)\s*(?:位|名|人)?/i);if(g3&&+g3[1]>0)o.g=+g3[1];var g2=o.g?null:tc.match(/(\d)\s*(?:位成人|位大人|成人|大人|adults?|guests?|人)/i);if(g2&&+g2[1]>0&&+g2[1]<10)o.g=+g2[1];
+  var tz=tc.replace(/\s*([~～\-])\s*/g,'$1'),rg=tz.match(/(20\d\d)[\/\-.](\d{1,2})[\/\-.](\d{1,2})[~～至到](?:(20\d\d)[\/\-.])?(\d{1,2})[\/\-.](\d{1,2})/);
+  if(rg){o.ci=rg[1]+'-'+pad(+rg[2])+'-'+pad(+rg[3]);o.co=(rg[4]||rg[1])+'-'+pad(+rg[5])+'-'+pad(+rg[6]);}
+  var nt=tc.match(/共\s*(\d{1,2})\s*晚|(\d{1,2})\s*nights?/i);if(nt&&o.ci&&!o.co)o.co=addDays(o.ci,+(nt[1]||nt[2]));
+  var co2=tz.match(/(?:退房|check-?out)[^\n]{0,40}?(\d{1,2})[:：](\d{2})[~～\-](\d{1,2})[:：](\d{2})/i);if(co2)o.cot=pad(+co2[3])+':'+co2[4];
+  var tel=tc.match(/(?:電話|tel|phone)\s*(?:[(（][A-Za-z]+[)）])?\s*[:：]?\s*(\+?\d[\d\- ]{6,}\d)/i);if(tel)o.phone=tel[1].replace(/\s/g,'');
+  if(o.addr)o.addr=cleanAddr(o.addr).replace(/^[(（][A-Za-z]+[)）]\s*[:：]?\s*/,'').replace(/属/g,'區');
+  if(!o.conf){var bk=tc.match(/(?:訂房代號|booking id|訂單號碼|訂單編號)[\s\S]{0,160}?#?\s*(\d{6,})/i)||tc.match(/#\s*(\d{6,})/);if(bk)o.conf=bk[1];}
+  var bf=tc.match(/不含早餐|含早餐|附早餐|無早餐|breakfast (?:not )?included|room only|no breakfast/i);if(bf)o.note=bf[0];
+  var gn=t.match(/\b([A-Z]{2,}\s?\/\s?[A-Z]{2,})\b/);if(gn)o.guest=gn[1].replace(/\s/g,'');
+  if(/(?:一般|通常|多為)[^\n]{0,30}(?:入住|check-?in)|(?:入住|check-?in)[^\n]{0,20}多為/i.test(tc))o.tgen=1;
+  var L=tc.split('\n').map(function(x){return x.trim();}).filter(Boolean),lab=tc.match(/(?:飯店名稱|酒店名稱|住宿名稱|ホテル名|施設名|宿泊施設|hotel name|property name|飯店|酒店)\s*[:：]\s*([^\n]{3,60})/i);
+  var hi=-1;tc.split('\n').map(function(x){return x.trim();}).filter(Boolean).forEach(function(x,i){if(hi<0&&/飯店資料|酒店資料|住宿資料|hotel information|hotel details|property details/i.test(x))hi=i;});
+  if(hi>=0&&L[hi+1]&&!/地址|address/i.test(L[hi+1]))o.name=L[hi+1].replace(/^\d+\s+/,'');else if(lab)o.name=lab[1];else{var hl=L.filter(function(x){return /飯店|酒店|旅館|ホテル|hotel|inn\b|resort|hostel/i.test(x)&&!/地址|address|訂單|預訂|booking|確認|confirm/i.test(x);})[0];if(hl)o.name=hl;}
+  var rl0=tc.match(/(?:房型|部屋タイプ|room type|room)[ \t]*[:：][ \t]*([^\n]{3,50})/i);o.room=rl0?rl0[1].trim():'';
+  var ur=tc.match(/\b([A-Z][A-Z ]{2,40}?(?:ROOM|SUITE|TWIN|DOUBLE|SINGLE|TRIPLE|STUDIO))\b/);if(ur&&!/ROOM TYPE/i.test(ur[1]))o.room=ur[1].trim();
+  if(!o.room){var rl=L.filter(function(x){return /(房|room|suite)/i.test(x)&&!/退房|入住|客房\s*$|間客房|check|數量|room type|訂房代號|booking|adults?|guests?|nights?|成人|位|間・/i.test(x)&&x.length<40&&x!==o.name;})[0];if(rl)o.room=rl.replace(/^(房型|room type)\s*[:：]?\s*/i,'');}
+  if(!o.name){for(var q=1;q<L.length;q++){if(/\d/.test(L[q])&&/(road|rd\.|street|st\.|avenue|ave\.|-ku|district|區|市|町|丁目)/i.test(L[q])&&!/\d/.test(L[q-1])&&L[q-1].length<60&&!/trip|itinerary|confirm|訂單|確認/i.test(L[q-1])){o.name=L[q-1];if(!o.addr)o.addr=L[q];break;}}}
+  if(o.name)o.name=o.name.replace(/^[:：\s]+/,'').replace(/\s{2,}.*/,'').slice(0,60);
+  if(!o.city&&o.addr){var cm=o.addr.match(/(東京|大阪|京都|沖繩|福岡|札幌|首爾|釜山|曼谷|台北|臺北|高雄|香港|新加坡|Tokyo|Osaka|Kyoto|Okinawa|Fukuoka|Sapporo|Seoul|Busan|Bangkok|Taipei|Singapore|Hong Kong)/i);if(cm)o.city=cm[1];}
+  return o;}
+function fetchDet(s){if(DET[s.name]&&!DET[s.name].err&&DET[s.name].sources&&DET[s.name].v===2)return;DET[s.name]={loading:true};
+  fetch(RELAY+'/detail?v=2&name='+encodeURIComponent(s.name)+'&city='+encodeURIComponent(s.city||'')+(s.hotelId?'&hotelId='+s.hotelId:'')).then(function(r){return r.json();})
+   .then(function(d){d.v=2;DET[s.name]=d;lss('fs_det',DET);render();}).catch(function(){DET[s.name]={err:1};render();});}
+function syncStays(){post({action:'stays',stays:STAYS.map(function(s){return {name:s.name,ci:s.ci,co:s.co,cit:s.cit||(DET[s.name]||{}).checkin||'',cot:s.cot||(DET[s.name]||{}).checkout||''};})}).catch(function(){});}
+
+/* ---------- 其他 ---------- */
+/* 飛省 ⇄ 飯省 連動 */
+var IATA={TYO:'Tokyo',OSA:'Osaka',SPK:'Sapporo',NGO:'Nagoya',SEL:'Seoul',BJS:'Beijing',SHA:'Shanghai',TPE:'Taipei',LON:'London',PAR:'Paris',NYC:'New York',MIL:'Milan',ROM:'Rome',BKK:'Bangkok',JKT:'Jakarta',WAS:'Washington',CHI:'Chicago',YTO:'Toronto',YMQ:'Montreal',STO:'Stockholm',MOW:'Moscow',BUE:'Buenos Aires',SAO:'Sao Paulo',RIO:'Rio de Janeiro',MXP:'Milan',LIN:'Milan',CIA:'Rome',STN:'London',LCY:'London',LTN:'London',BVA:'Paris',LGA:'New York',IAD:'Washington',DCA:'Washington',ORD:'Chicago',YYZ:'Toronto',ARN:'Stockholm',SVO:'Moscow',DME:'Moscow',SAW:'Istanbul',IBR:'Ibaraki',AOJ:'Aomori',AKJ:'Asahikawa',KCZ:'Kochi',MYJ:'Matsuyama',NGS:'Nagasaki',OIT:'Oita',KMI:'Miyazaki',ISG:'Ishigaki',MMY:'Miyako',SHI:'Miyako',TOY:'Toyama',FSZ:'Shizuoka',KIJ:'Niigata',TAE:'Daegu',CJJ:'Cheongju',USM:'Koh Samui',KBV:'Krabi',CEI:'Chiang Rai',HDY:'Hat Yai',UTP:'Pattaya',REP:'Siem Reap',PNH:'Phnom Penh',RGN:'Yangon',VTE:'Vientiane',LPQ:'Luang Prabang',CRK:'Clark',MPH:'Boracay',KLO:'Boracay',PPS:'Puerto Princesa',TAG:'Bohol',LGK:'Langkawi',JHB:'Johor Bahru',KCH:'Kuching',HUI:'Hue',DLI:'Da Lat',HPH:'Hai Phong',VCA:'Can Tho',MLE:'Maldives',CMB:'Colombo',KTM:'Kathmandu',DEL:'New Delhi',BOM:'Mumbai',DOH:'Doha',AUH:'Abu Dhabi',CAN:'Guangzhou',SZX:'Shenzhen',CTU:'Chengdu',TFU:'Chengdu',CKG:'Chongqing',XIY:'Xian',HGH:'Hangzhou',NKG:'Nanjing',XMN:'Xiamen',FOC:'Fuzhou',TAO:'Qingdao',DLC:'Dalian',KMG:'Kunming',WUH:'Wuhan',CSX:'Changsha',SYX:'Sanya',HAK:'Haikou',TNA:'Jinan',SHE:'Shenyang',HRB:'Harbin',TYN:'Taiyuan',TNN:'Tainan',CYI:'Chiayi',HUN:'Hualien',TTT:'Taitung',MZG:'Penghu',KNH:'Kinmen',LZN:'Matsu',ADL:'Adelaide',PER:'Perth',OOL:'Gold Coast',CNS:'Cairns',CHC:'Christchurch',ZQN:'Queenstown',SPN:'Saipan',ROR:'Palau',NAN:'Nadi',PPT:'Tahiti',OGG:'Maui',KOA:'Kona',LAS:'Las Vegas',SAN:'San Diego',BOS:'Boston',MIA:'Miami',MCO:'Orlando',ATL:'Atlanta',DFW:'Dallas',IAH:'Houston',DEN:'Denver',PHX:'Phoenix',PDX:'Portland',ANC:'Anchorage',YYC:'Calgary',EDI:'Edinburgh',MAN:'Manchester',DUB:'Dublin',BRU:'Brussels',CPH:'Copenhagen',OSL:'Oslo',HEL:'Helsinki',BER:'Berlin',HAM:'Hamburg',DUS:'Dusseldorf',GVA:'Geneva',NCE:'Nice',LYS:'Lyon',MRS:'Marseille',VCE:'Venice',FLR:'Florence',NAP:'Naples',LIS:'Lisbon',OPO:'Porto',AGP:'Malaga',SVQ:'Seville',ATH:'Athens',JTR:'Santorini',BUD:'Budapest',WAW:'Warsaw',KRK:'Krakow',KEF:'Reykjavik',CAI:'Cairo',JNB:'Johannesburg',CPT:'Cape Town',NRT:'Tokyo',HND:'Tokyo',KIX:'Osaka',ITM:'Osaka',UKB:'Kobe',FUK:'Fukuoka',CTS:'Sapporo',OKA:'Okinawa',NGO:'Nagoya',SDJ:'Sendai',HIJ:'Hiroshima',KOJ:'Kagoshima',KMJ:'Kumamoto',OKJ:'Okayama',TAK:'Takamatsu',KMQ:'Kanazawa',HKD:'Hakodate',ICN:'Seoul',GMP:'Seoul',PUS:'Busan',CJU:'Jeju',BKK:'Bangkok',DMK:'Bangkok',CNX:'Chiang Mai',HKT:'Phuket',TPE:'Taipei',TSA:'Taipei',KHH:'Kaohsiung',RMQ:'Taichung',HKG:'Hong Kong',MFM:'Macau',SIN:'Singapore',KUL:'Kuala Lumpur',PEN:'Penang',BKI:'Kota Kinabalu',MNL:'Manila',CEB:'Cebu',SGN:'Ho Chi Minh City',HAN:'Hanoi',DAD:'Da Nang',CXR:'Nha Trang',PQC:'Phu Quoc',DPS:'Bali',CGK:'Jakarta',PVG:'Shanghai',SHA:'Shanghai',PEK:'Beijing',PKX:'Beijing',CDG:'Paris',ORY:'Paris',LHR:'London',LGW:'London',FCO:'Rome',BCN:'Barcelona',MAD:'Madrid',AMS:'Amsterdam',FRA:'Frankfurt',MUC:'Munich',VIE:'Vienna',PRG:'Prague',ZRH:'Zurich',IST:'Istanbul',DXB:'Dubai',JFK:'New York',EWR:'New York',LAX:'Los Angeles',SFO:'San Francisco',SEA:'Seattle',YVR:'Vancouver',HNL:'Honolulu',GUM:'Guam',SYD:'Sydney',MEL:'Melbourne',BNE:'Brisbane',AKL:'Auckland'};
+var C2I={};Object.keys(IATA).forEach(function(k){var c=IATA[k].toLowerCase();if(!C2I[c])C2I[c]=k;});
+var ZH2EN={'東京':'tokyo','大阪':'osaka','福岡':'fukuoka','札幌':'sapporo','沖繩':'okinawa','名古屋':'nagoya','首爾':'seoul','釜山':'busan','曼谷':'bangkok','香港':'hong kong','新加坡':'singapore','吉隆坡':'kuala lumpur','馬尼拉':'manila','胡志明市':'ho chi minh city','河內':'hanoi','峇里島':'bali','巴黎':'paris','倫敦':'london','紐約':'new york','京都':'osaka','神戶':'kobe','高雄':'kaohsiung','台北':'taipei','臺北':'taipei','澳門':'macau','峴港':'da nang','濟州':'jeju'};
+var FROMFLY=false;
+function flyUrl(s){var c=String(s.city||'').trim(),k=c.toLowerCase(),to=/^[A-Z]{3}$/.test(c)?c:C2I[k]||C2I[ZH2EN[c]||'']||c;
+  return 'https://luke120513-sys.github.io/flysave/?'+(to?'to='+encodeURIComponent(to)+'&':'')+'dep='+s.ci+'&ret='+s.co+'&pax='+(s.g||2)+'&from=fansave';}
+function fromQuery(){var q=new URLSearchParams(location.search),c=(q.get('city')||'').trim(),nr=(q.get('near')||'').trim().slice(0,60);if(!c&&!nr)return;if(nr){st.near=nr;st.r=[1,3,5,10,20].indexOf(+q.get('r'))>=0?+q.get('r'):3;st.geo=null;st.sort='dist';}else{st.near='';st.geo=null;}
+  var u=c.toUpperCase(),ci=q.get('in'),co=q.get('out'),g=+q.get('guests')||2,re=/^\d{4}-\d{2}-\d{2}$/;
+  st.city=c?(IATA[u]||c):'';if(c&&!IATA[u]&&/^[A-Z]{3}$/.test(c)){history.replaceState(null,'',location.pathname);st.city='';st.step='dest';setTimeout(function(){toast('看不懂代碼「'+c+'」，請輸入城市名稱');},800);return;}if(re.test(ci||'')&&ci>today())st.ci=ci;else st.ci=addDays(today(),14);
+  st.co=re.test(co||'')&&co>st.ci?co:addDays(st.ci,2);st.g=Math.min(8,Math.max(1,g));FROMFLY=q.get('from')==='flysave';
+  tab='search';st.step='result';R=null;history.replaceState(null,'',location.pathname);}
+function row(t,ic,ti,d){return '<button class="mopt" data-act="go:'+t+'"><span class="ic">'+ic+'</span><span class="tx"><b>'+ti+'</b><span>'+d+'</span></span><span class="ar">›</span></button>';}
+function moreView(){return '<div class="panel"><p class="step">🎨 外觀</p><div class="chips">'+[['auto','跟隨系統'],['light','☀️ 淺色'],['dark','🌙 深色']].map(function(t){return chip(t[1],'theme:'+t[0],THEME===t[0]);}).join('')+'</div></div>'+
+  '<div class="panel"><p class="step">☰ 其他</p>'+row('notifset','🔔','通知設定','系統通知開關、測試通知')+row('plan','💎','方案與贊助','目前全部功能免費')+row('help','💡','說明','CP 值怎麼算、怎麼用')+
+  '<a class="mopt" style="text-decoration:none" href="mailto:'+CONTACT+'?subject='+encodeURIComponent('飯省 意見回饋')+'"><span class="ic">💬</span><span class="tx"><b>意見回饋</b><span>功能建議、問題回報</span></span><span class="ar">›</span></a>'+
+  '<a class="mopt" style="text-decoration:none" target="_blank" rel="noopener" href="https://luke120513-sys.github.io/flysave/?from=fansave"><span class="ic">✈️</span><span class="tx"><b>飛省 FlySave</b><span>找便宜機票（姊妹站）</span></span><span class="ar">›</span></a>'+row('about','🏨','關於我們','服務說明')+row('privacy','🔒','隱私權政策','')+row('terms','📄','服務條款','')+'</div>';}
+function page(t,b){return '<div class="panel legal"><p class="step">'+t+'</p>'+b+'</div>';}
+function plan(){return page('💎 方案與贊助','<div class="plan rec"><b>免費版</b>・<b class="p">NT$0</b><p>找飯店、CP 值排序、我的查詢、降價系統通知、我訂購的飯店，全部免費。</p></div>'+
+  '<div class="plan" style="opacity:.75"><b>進階版（規劃中）</b>・<b class="p">價格未定</b><p>更多存下的查詢、更頻繁的降價檢查、多城市同時比價。<b>尚未開放，也不會收費。</b></p></div>'+
+  '<p>喜歡飯省的話，歡迎請我們喝杯咖啡，讓服務繼續免費：</p><a class="btn" target="_blank" rel="noopener" href="'+SPONSOR_URL+'" style="text-decoration:none;text-align:center">☕ 贊助飯省</a>');}
+function help(){return page('💡 說明','<h3>🔍 找飯店</h3><p>輸入城市（中英文都可以）→ 點入住、退房日期 → 馬上看結果。上方可以改人數、預算、排序。</p><h3>🏆 推薦分數怎麼算</h3><p>推薦分數 =（加權評分 − 6）² × 交通便利係數 × 10000 ÷ √每晚價格。</p><ul><li><b>加權評分</b>：依評論數調整，評論越少越往 8.0 靠（評論數 ÷（評論數＋150）的比重用飯店自己的分數），避免只有幾十則評論的高分飯店排第一。評分都是 10 分制（Google 的 5 分制會 ×2）。</li><li><b>交通便利係數</b>：出國多半沒開車，所以看最近的火車／地鐵站步行距離：300 m 內 ×1.15、500 m 內 ×1.10、800 m 內 ×1.0、1.2 km 內 ×0.88、更遠 ×0.78；查不到 ×0.95。離市中心 3 km 內再 +0.05，超過 12 km −0.05。</li><li><b>價格</b>：用平方根，便宜有加分，但不會讓評價差的便宜飯店排到最前面。</li></ul><p>想只看離車站最近的，按「🚇 交通便利」排序。</p><h3>💰 關於價錢</h3><p>每晚含稅參考價（新台幣），來源和查詢時間標在結果上方。主要來源是 Trip.com，抓不到時會自動改用備援來源，再不行會顯示暫存資料，並清楚標示。實際價格以訂房網站為準。</p><h3>🔔 降價通知</h3><p>在結果頁按「存下這個查詢」，並在「降價通知」打開系統通知。每天 09:00 重查，降價 5% 以上就會通知你。</p><h3>🧳 我訂購的飯店</h3><p>加入訂好的飯店（可以貼上確認信自動帶入），會顯示倒數、入住退房時間、設施、地圖，入住前一天和退房當天早上提醒你。</p><h3>📱 加到主畫面</h3><p>iPhone：Safari「分享」→「加入主畫面」。Android：Chrome「⋮」→「安裝應用程式」。</p>');}
+function about(){return page('🏨 關於我們／服務說明','<p>飯省 FanSave 是免費的飯店比價資訊服務，幫你用「CP 值」（評分對價格）找到划算的住宿，是飛省 FlySave 的姊妹服務。</p><p>我們不賣房、不代訂、不收款。按「訂房」會前往 Trip.com、Booking.com、Agoda 等網站，訂房與付款都在該網站完成。</p><p>價格隨時會變，訂房網站也可能另加費用，實際金額以訂房頁面為準。</p><p>聯絡我們：'+MAIL+'</p>');}
+function privacy(){return page('🔒 隱私權政策','<p class="note">最後更新：2026 年 10 月 19 日</p>'+
+ '<h3>1. 我們是誰</h3><p>飯省 FanSave（以下稱「本服務」）由飛省 FlySave 團隊經營。聯絡方式：'+MAIL+'。</p>'+
+ '<h3>2. 我們蒐集哪些資料</h3><ul><li><b>不需要註冊或登入</b>，我們不蒐集姓名、電話、Email、身分證或付款資料。</li><li><b>匿名裝置代碼</b>：第一次使用時在你的瀏覽器隨機產生，用來讓每台裝置只看到自己的資料，不含可識別身分的資訊。</li><li><b>搜尋條件</b>：城市、入住／退房日期、人數、預算。你按「存下這個查詢」時，會和匿名裝置代碼一起存到伺服器。</li><li><b>通知訂閱</b>：開啟系統通知時，瀏覽器會產生一組推播訂閱資訊（推播服務網址與加密金鑰），我們存下它用來傳送通知。</li><li><b>我訂購的飯店</b>：你輸入的飯店名稱、日期、確認號碼、房型、價格、取消期限、電話與貼上的確認信文字，<b>只存在你的裝置</b>（localStorage）。為了入住提醒，只有飯店名稱與入住／退房日期和時間會送到伺服器；為了補上飯店資料，飯店名稱與城市會送到我們的資料中繼服務查詢。確認信全文不會上傳。</li><li><b>技術紀錄</b>：服務供應商可能自動記錄 IP 位址、瀏覽器類型與存取時間，用於安全與除錯。</li></ul>'+
+ '<h3>2-1. 訂房截圖</h3><p>「📷 用截圖新增」的圖片<b>只在你的裝置上辨識</b>（Tesseract.js），不會上傳到我們或任何伺服器，也不會儲存。辨識程式與語言模型會從 jsDelivr 公開 CDN 下載。辨識出的文字只用來填入表單，存檔後與其他住宿資料一樣存在你的裝置（並同步你的住宿提醒）。</p><h3>3. 使用目的</h3><p>只用於提供飯店價格查詢、降價與入住提醒、改善服務。<b>不出售、不出租</b>，也不提供給第三方做行銷，不用於廣告追蹤。</p>'+
+ '<h3>4. 處理資料的服務商</h3><ul><li><b>Google（Apps Script）</b>：儲存匿名裝置代碼、存下的查詢、通知訂閱與通知紀錄。</li><li><b>Cloudflare（Workers）</b>：查詢公開飯店價格與飯店資料、傳送推播通知。</li><li><b>瀏覽器推播服務</b>（Google FCM、Apple、Mozilla 等，依你的瀏覽器而定）：遞送系統通知。</li><li><b>GitHub Pages</b>：提供網站本身。</li></ul><p>這些服務商可能在台灣以外的地區處理資料。</p>'+
+ '<h3>5. 第三方網站</h3><p>價格與飯店資料來自 Trip.com、Google 等公開頁面。點「訂房」、「比價」或「地圖」會前往 Trip.com、Booking.com、Agoda、Google 地圖等網站，這些網站有自己的隱私權政策與 Cookie，請另行參閱。你在那些網站的訂房與付款資料，我們看不到也不會蒐集。</p>'+
+ '<h3>6. Cookie 與本機儲存</h3><p>本服務不使用廣告或追蹤 Cookie，只用瀏覽器本機儲存（localStorage、Service Worker 快取）保存你的設定、我訂購的飯店與離線用的網頁檔案。</p>'+
+ '<h3>7. 付款</h3><p>本服務目前完全免費，不經手任何付款。「贊助」按鈕會前往第三方贊助平台，付款由該平台處理。日後若推出付費方案，會先更新本政策並說明付款服務商。</p>'+
+ '<h3>8. 保存期間與刪除</h3><ul><li>存下的查詢：你可以在「我的查詢」隨時刪除；入住日過後不再檢查。</li><li>通知訂閱：在「通知設定」關閉即刪除；推播服務回報失效時也會自動刪除。</li><li>通知紀錄：最多保留最近 30 則，可隨時清除。</li><li>本機資料：清除瀏覽器資料即全部移除。</li></ul><p>也可以來信要求刪除與你的匿名裝置代碼相關的所有資料。</p>'+
+ '<h3>9. 你的權利</h3><p>依《個人資料保護法》，你可以請求查詢、閱覽、複製、補充更正、停止處理或刪除你的資料，請來信：'+MAIL+'。</p>'+
+ '<h3>10. 兒童</h3><p>本服務不針對未滿 13 歲兒童設計，也不會刻意蒐集兒童資料。</p>'+
+ '<h3>11. 政策更新</h3><p>政策有更新時會公布在本頁並修改「最後更新」日期；重大變更會在公告欄通知。</p>');}
+function terms(){return page('📄 服務條款','<p class="note">最後更新：2026 年 10 月 19 日</p>'+
+ '<h3>1. 服務內容</h3><p>飯省 FanSave（以下稱「本服務」）免費提供飯店價格比較、CP 值排序、降價通知與住宿提醒等資訊工具，僅供參考。</p>'+
+ '<h3>2. 價格與資料正確性</h3><p>價格、評分、設施、入住／退房時間等資訊來自 Trip.com、Google 等公開來源或你自己輸入，可能延遲、不完整或有誤。本服務會盡力保持正確，但不保證即時、完整或無誤。實際價格、稅費、房型與取消規定，以訂房網站與飯店為準。</p>'+
+ '<h3>3. 訂房與付款</h3><p>本服務不販售住宿、不代訂、不經手付款。你與訂房網站或飯店之間的交易、變更、取消與退款，由雙方依其條款處理，本服務不負責。</p>'+
+ '<h3>4. 通知</h3><p>降價與入住提醒為盡力提供的附加功能，可能因網路、瀏覽器或推播服務延遲或未送達。重要行程請自行確認，不要只依賴通知。</p>'+
+ '<h3>5. 費用與退款</h3><p>本服務目前免費。贊助屬自願性質，由第三方平台處理，原則上不退款；如有重複扣款等問題請來信，我們會協助處理。日後若推出付費方案，會另行公布價格、權益與退款規則，並依《消費者保護法》等相關法令辦理。</p>'+
+ '<h3>6. 使用規範</h3><p>請勿以自動化程式大量存取、干擾、破解或濫用本服務，或用於任何違法用途。</p>'+
+ '<h3>7. 責任限制</h3><p>在法律允許範圍內，本服務對因使用或無法使用本服務、資訊錯誤或第三方網站所生之損失不負賠償責任。</p>'+
+ '<h3>8. 服務變更</h3><p>本服務可能隨時調整內容、暫停或終止，條款更新會公布在本頁。繼續使用即表示同意更新後的條款。</p>'+
+ '<h3>9. 準據法</h3><p>本條款以中華民國法律為準據法，如有爭議，以臺灣臺北地方法院為第一審管轄法院。</p><p>聯絡我們：'+MAIL+'</p>');}
+
+/* ---------- 公告輪播（內容在後端，可隨時修改） ---------- */
+var AI=0,AT=null,APAUSE=false;
+var TAG='找 CP 值最高的飯店',UPD_I=0,RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,UPD_TIPS=['點左上角 📢 查看最新公告','🚉 訂房後看車站到飯店的距離','💎 不在乎價錢？試試「豪華五星」','🧳「我的住宿」看入住、退房時間'];
+function annSeen(){return lsg('fs_annseen',[]);}function annUnread(){var sn=annSeen();return ANN.filter(function(a){return sn.indexOf(a.id||a.title)<0;});}
+function updItems(){var L=[{t:TAG}],a=annUnread()[0];if(a)L.push({t:'📢 新公告：'+a.title,a:1});UPD_TIPS.forEach(function(x){L.push({t:x});});return L;}
+function annRender(){var b=$('annbar');if(b)b.hidden=true;var n=annUnread().length,c=$('annn');if(c){c.textContent=n||'';c.classList.toggle('on',n>0);}}
+function updShow(){var e=$('upd');if(!e)return;var L=updItems(),it=L[UPD_I%L.length];var put=function(){e.textContent=it.t;e.style.cursor=it.a?'pointer':'';e.dataset.act=it.a?'ann':'';e.style.opacity=1;};if(RM||e.textContent===''){put();return;}e.style.opacity=0;setTimeout(put,300);}
+function annNext(){if(APAUSE)return;UPD_I++;updShow();}
+function annStart(){clearInterval(AT);AT=setInterval(annNext,RM?8000:4000);}
+function annLoad(){var go=function(a){if(!Array.isArray(a))return;ANN=a;lss('fs_ann',a);AI=0;annRender();annStart();};annRender();annStart();if(API)fetch(API+'?action=ann').then(function(r){return r.json();}).then(function(j){if(j.ok)go(j.ann);}).catch(function(){});}
+
+/* ---------- render ---------- */
+var LAST_TAB=null,LAST_STEP=null;
+function nfyDot(){var n=ALERTS.filter(function(a){return a.ts>(lsg('fs_seen',0));}).length;$('nfyn').textContent=n?String(n):'';}
+function render(){
+  document.querySelectorAll('nav button').forEach(function(b){b.classList.toggle('on',b.dataset.tab===(SUBS.indexOf(tab)>=0?'more':tab));});
+  var h=tab==='mine'?mine():tab==='stays'?stays():tab==='alerts'?alertsView():tab==='more'?moreView():tab==='about'?about():tab==='privacy'?privacy():tab==='terms'?terms():tab==='help'?help():tab==='plan'?plan():tab==='notifset'?notifyPanel():search();
+  if(SUBS.indexOf(tab)>=0)h='<button class="back" data-act="tab:more">‹ 其他</button>'+h;
+  h+='<p class="note" style="text-align:center;margin:18px 0 0">'+'<a href="#" data-act="go:privacy">隱私權政策</a>｜<a href="#" data-act="go:terms">服務條款</a><br>© 2026 飯省 FanSave・'+VER+'</p>';
+  var m=$('main'),tabChg=LAST_TAB!==tab,stepChg=LAST_STEP!==st.step;
+  var fq=document.activeElement&&document.activeElement.id==='dest';
+  m.innerHTML=h;
+  if(fq&&$('dest')){var e=$('dest');e.focus();e.setSelectionRange(e.value.length,e.value.length);}
+  if(LAST_TAB!==null&&(tabChg||stepChg)){window.scrollTo(0,0);var ti=TABS.indexOf(tab),pi=TABS.indexOf(LAST_TAB);m.classList.remove('inR','inL','inF');void m.offsetWidth;m.classList.add(tabChg&&ti>=0&&pi>=0?(ti>pi?'inR':'inL'):'inF');}
+  LAST_TAB=tab;LAST_STEP=st.step;
+  if(tab==='alerts'){lss('fs_seen',Date.now());nfyDot();}
+  if(tab==='stays')STAYS.forEach(function(s){var d=DET[s.name];if(!d||(!d.loading&&!d.err&&d.v!==2))fetchDet(s);});
+}
+function sug(v){var b=$('sug');if(!b)return;var t=v.trim().toLowerCase(),L=(t?CITIES.filter(function(c){return c[0].toLowerCase().indexOf(t)>=0||c[1].toLowerCase().indexOf(t)>=0;}):[]).slice(0,7);
+  var known=CITIES.some(function(c){return c[0]===v.trim()||c[1].toLowerCase()===t;});
+  b.innerHTML=L.map(function(c){return '<div class="sg" data-act="city:'+c[0]+'">📍 '+c[0]+' <small>'+c[1]+'</small></div>';}).join('')+(t&&!known?'<div class="sg" data-act="city:'+esc(v.trim())+'">🔎 搜尋「'+esc(v.trim())+'」</div>':'');b.style.display=b.innerHTML?'block':'none';}
+document.addEventListener('change',function(e){if(e.target.id==='shotin'&&e.target.files&&e.target.files[0])ocrShot(e.target.files[0]);});
+document.addEventListener('input',function(e){if(e.target.id==='dest')sug(e.target.value);if(e.target.id==='nearq'){st.near=e.target.value.trim().slice(0,60);st.geo=null;st.nearOpen=1;saveSt();}});
+document.addEventListener('keydown',function(e){if(e.target.id==='nearq'&&e.key==='Enter'&&st.near){var d=$('dest');var c=d&&d.value.trim();st.sort='dist';if(c)go('city',c);else{st.city='';if(st.ci&&st.ci>today()){runSearch();}else{st.ci=addDays(today(),14);st.co=addDays(st.ci,2);runSearch();}}}});
+document.addEventListener('keydown',function(e){if(e.target.id==='dest'&&e.key==='Enter'&&e.target.value.trim()){go('city',e.target.value.trim());}});
+document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.target.closest('.btn,.chip,.mopt,.sw,.grid .d');if(!b||b.disabled)return;buzz();if(b.classList.contains('btn')){b.classList.remove('press');void b.offsetWidth;b.classList.add('press');}});
+function go(k,x){
+  if(k==='city'){var xu=String(x).trim().toUpperCase();if(/^[A-Z]{3}$/.test(xu)){if(IATA[xu])x=IATA[xu];else{toast('看不懂代碼「'+xu+'」，請輸入城市名稱');return;}}st.city=x;st.step='cal';if(!st.ci||st.ci<=today()){st.ci='';st.co='';}st.month='';saveSt();render();return;}
+}
+document.addEventListener('click',function(e){
+  var nb=e.target.closest('nav button');if(nb){tab=nb.dataset.tab;if(tab==='search'&&st.step==='result'&&!R&&!LOADING)st.step=st.ci?'cal':'dest';render();if(tab==='mine'||tab==='alerts')post({action:'sync'}).then(syncFrom).catch(function(){});return;}
+  var sp=e.target.closest('[data-stop]');if(sp){if(sp.dataset.pb!=null)postBook(+sp.dataset.pb);return;}
+  var a=e.target.closest('[data-act]');if(!a||a.disabled)return;e.preventDefault();
+  var v=a.dataset.act,k=v.split(':')[0],x=v.slice(k.length+1);
+  if(k==='shx')return closeSheet();
+  if(k==='rad'){st.r=+x;st.nearOpen=1;saveSt();render();return;}
+  if(k==='nearx'){st.near='';st.geo=null;if(st.sort==='dist')st.sort='pop';saveSt();render();return;}
+  if(k==='rv')return revSheet(+x);
+  if(k==='tab'){tab=x;if(x==='search'&&!R)st.step=st.city?'cal':'dest';render();return;}
+  if(k==='go'){tab=x;closeSheet(true);render();return;}
+  if(k==='city')return go('city',x);
+  if(k==='relast'){var l=lsg('fs_last',null);st.city=l.city;st.ci=l.ci;st.co=l.co;st.g=l.g;return runSearch();}
+  if(k==='s'){st.step=x;saveSt();render();return;}
+  if(k==='cm'){st.month=x;render();return;}
+  if(k==='cd'){if(!st.ci||st.co||x<=st.ci){st.ci=x;st.co='';}else st.co=x;st.month=x.slice(0,7);saveSt();render();return;}
+  if(k==='qp'){var p=x.split(':');st.ci=p[0];st.co=p[1];st.month=p[0].slice(0,7);saveSt();render();return;}
+  if(k==='calok')return runSearch();
+  if(k==='g'){st.g=+x;closeSheet(true);return runSearch();}
+  if(k==='bd'){st.budget=+x;closeSheet(true);saveSt();render();return;}
+  if(k==='dd'&&x==='filt')return filtSheet();
+  if(k==='af'){var a=st.af=st.af||[],ix=a.indexOf(x);if(ix<0)a.push(x);else a.splice(ix,1);return filtSheet(true);}
+  if(k==='pt'){st.ptn=x;return filtSheet(true);}
+  if(k==='afgo'){var op=st.pt||'hotel';st.pt=st.ptn||op;if(st.pt==='villa'&&st.sort==='lux')st.sort='pop';closeSheet(true);saveSt();return runSearch();}
+  if(k==='afclr2'){st.af=[];saveSt();return runSearch();}
+  if(k==='afclr'){st.af=[];st.ptn='hotel';return filtSheet(true);}
+  if(k==='dd'){if(x==='sort')return pickSheet('排序方式',sortOpts(),st.sort,'sort');if(x==='bd')return pickSheet('每晚預算',BUDS,st.budget,'bd');if(x==='g')return pickSheet('入住人數',[1,2,3,4,5,6,7,8,9,10,11,12].map(function(n){return [n,n+' 人'];}),st.g,'g');}
+  if(k==='sort'){var wasL=st.sort==='lux';st.sort=x;closeSheet(true);saveSt();if(wasL!==(x==='lux')&&R&&!R.example)return runSearch();render();return;}
+  if(k==='hd')return hotelSheet(+x);
+  if(k==='savq'){var list=(window.VIEW||[]),base=list.reduce(function(m,h){return !m||h.price<m?h.price:m;},0);
+    var q={city:st.city,ci:st.ci,co:st.co,g:st.g,budget:st.budget,notify:true};MYQ.unshift(Object.assign({base:base},q));lss('fs_myq',MYQ);render();
+    post({action:'saveSearch',q:q,base:base,top:list.slice(0,5).map(function(h){return {name:h.name,price:h.price};})}).then(syncFrom).catch(function(){toast('已存在這台裝置（伺服器暫時連不上）');});
+    toast(PUSH==='on'?'✅ 已存下，降價會通知你':'✅ 已存下・到「降價通知」打開系統通知');return;}
+  if(k==='qo'){var q2=MYQ[+x];st.city=q2.city;st.ci=q2.ci;st.co=q2.co;st.g=q2.g;st.budget=q2.budget||0;tab='search';return runSearch();}
+  if(k==='qn'){MYQ[+x].notify=MYQ[+x].notify===false;render();post({action:'toggleNotify',i:+x}).then(syncFrom).catch(function(){});return;}
+  if(k==='qd'){if(!confirm('刪除這組查詢？'))return;MYQ.splice(+x,1);lss('fs_myq',MYQ);render();post({action:'delSearch',i:+x}).then(syncFrom).catch(function(){});return;}
+  if(k==='push'){return x==='on'?pushOn():pushOff();}
+  if(k==='ptest'){toast('傳送中…');var tp=function(){return post({action:'testPush'});};
+    tp().then(function(j){if(j.ok||j.error!=='尚未開啟通知')return j;return curSub().then(function(sub){if(!sub)throw new Error('這台裝置沒有推播訂閱，請把開關關掉再打開');return saveSub(sub);}).then(tp);})
+     .then(function(j){toast(j.ok?'✅ 已送出，幾秒內會跳出通知':'⚠️ 送出失敗（'+(j.error||('推播服務回應 '+j.status))+'）');if(j.status===404||j.status===410){PUSH='off';lss('fs_push','off');render();}post({action:'sync'}).then(syncFrom);})
+     .catch(function(e){toast('⚠️ '+errText(e));});return;}
+  if(k==='al'){var al=ALERTS[+x];if(al&&al.q){st.city=al.q.city;st.ci=al.q.ci;st.co=al.q.co;st.g=al.q.g;tab='search';return runSearch();}return;}
+  if(k==='alc'){ALERTS=[];lss('fs_alerts',[]);render();post({action:'clearAlerts'}).catch(function(){});return;}
+  if(k==='theme'){THEME=x;lss('fs_theme',x);themeApply();render();return;}
+  if(k==='thx'){var dk=document.documentElement.classList.contains('dark');THEME=dk?'light':'dark';lss('fs_theme',THEME);themeApply();render();return;}
+  if(k==='nf'){tab='alerts';render();return;}
+  if(k==='ann')return annSheet();
+  if(false){var an;sheet('<h2>'+esc(an.title)+'</h2><p style="line-height:1.7">'+esc(an.body||'')+'</p>'+(an.link?'<a class="btn" href="'+esc(an.link)+'" style="text-decoration:none;text-align:center">查看</a>':'')+'<div class="lk">'+ANN.map(function(o,i){return i===AI?'':'<button data-act="anni:'+i+'">'+esc(o.title)+'</button>';}).join('')+'</div>');return;}
+  if(k==='anni')return annSheet(+x);
+  if(k==='sadd')return stayForm(null,-1);
+  if(k==='snew')return sheet('<h2>新增住宿</h2><div class="pick"><button data-act="sadd"><span>✏️ 手動輸入</span></button><button data-act="spaste"><span>📋 貼上訂單文字<br><small style="color:#8A7766;font-weight:400">確認信、訂單頁的文字整段貼上</small></span></button><button data-act="sshot"><span>📷 用截圖<br><small style="color:#8A7766;font-weight:400">在手機上辨識，圖片不上傳</small></span></button></div><p class="note" style="margin-top:10px">Android 也可以在 Gmail／相簿按「分享」→ 選「飯省」直接帶入。</p>');
+  if(k==='spaste')return sheet('<h2>📋 貼上訂單文字</h2><textarea id="pt_txt" style="width:100%;min-height:180px;border-radius:12px;border:1px solid #E9C9A9;padding:10px;font-size:14px;background:inherit;color:inherit;box-sizing:border-box" placeholder="把訂房確認信或訂單頁的文字整段貼上"></textarea><div style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" data-act="pclip" style="flex:1">📋 從剪貼簿貼上</button><button class="btn" data-act="pparse" style="flex:1">✨ 帶入</button></div><p class="note">文字只在這台裝置上分析，不會上傳。</p>');
+  if(k==='pclip'){if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(function(t){$('pt_txt').value=t||'';if(!t)toast('剪貼簿是空的');}).catch(function(){toast('沒有剪貼簿權限，請長按輸入框手動貼上');});else toast('這個瀏覽器不支援，請長按輸入框手動貼上');return;}
+  if(k==='pparse'){var tx=($('pt_txt').value||'').trim();if(!tx){toast('請先貼上文字');return;}closeSheet(true);return textImport(tx);}
+  if(k==='sshot'){closeSheet(true);var fi=$('shotin');if(fi){fi.value='';fi.click();}return;}
+  if(k==='booked'){var hb=VIEW[+x];closeSheet(true);return stayForm({name:hb.name,city:st.city,ci:st.ci,co:st.co,g:st.g,price:hb.price*nights(st.ci,st.co),hotelId:hb.hotelId,station:hb.station,stationM:hb.stationM,walkMin:hb.walkMin,area:hb.area},-1);}
+  if(k==='se')return stayForm(STAYS[+x],+x);
+  if(k==='sd'){if(!confirm('刪除這筆住宿？'))return;STAYS.splice(+x,1);lss('fs_stays',STAYS);render();syncStays();return;}
+  if(k==='sparse'){var o=parseMail($('sf_mail').value||'');var n=0;for(var f in o){var el=$('sf_'+f);if(el&&o[f]){el.value=o[f];n++;}}toast(n?'✨ 帶入 '+n+' 個欄位，請確認':'沒有找到可以帶入的資料');return;}
+  if(k==='ssave'){var s={};['name','city','ci','co','cit','cot','conf','room','cancel','phone','addr','guest','note'].forEach(function(f){var e=$('sf_'+f);s[f]=e?(e.value||'').trim():'';});s.g=+$('sf_g').value||2;s.price=+$('sf_price').value||0;
+    if(!s.name||!s.ci||!s.co||s.co<=s.ci){toast('請填飯店名稱和正確的入住／退房日期');return;}
+    var i2=+x,bs=i2>=0?STAYS[i2]:(window.PRESTAY||{});if(bs.name===s.name||(bs.plat&&!bs.hotelId))['hotelId','station','stationM','walkMin','area','plat','cur','tgen'].forEach(function(f){if(bs[f]!=null)s[f]=bs[f];});if(i2>=0)STAYS[i2]=s;else STAYS.push(s);lss('fs_stays',STAYS);closeSheet();tab='stays';render();fetchDet(s);setTimeout(syncStays,4000);toast('✅ 已儲存');return;}
+});
+function annSheet(j){var an=j!=null?ANN[j]:(annUnread()[0]||ANN[0]);if(!an){toast('目前沒有公告');return;}AI=ANN.indexOf(an);var sn=annSeen();ANN.forEach(function(o){var k=o.id||o.title;if(sn.indexOf(k)<0)sn.push(k);});lss('fs_annseen',sn);annRender();sheet('<h2>'+esc(an.title)+'</h2><p style="line-height:1.7">'+esc(an.body||'')+'</p>'+(an.link?'<a class="btn" href="'+esc(an.link)+'" style="text-decoration:none;text-align:center">查看</a>':'')+(ANN.length>1?'<p class="note" style="margin-top:14px">其他公告</p><div class="lk">'+ANN.map(function(o,i){return i===AI?'':'<button data-act="anni:'+i+'">'+esc(o.title)+'</button>';}).join('')+'</div>':''));}
+document.addEventListener('pointerdown',function(e){if(e.target.closest&&e.target.closest('#annbar')){APAUSE=true;clearTimeout(annNext.t);annNext.t=setTimeout(function(){APAUSE=false;},6000);}});
+function route(){var h=decodeURIComponent(location.hash||'');
+  if(h.indexOf('#tab=')===0){tab=h.slice(5);if(tab==='notify')tab='alerts';}
+  if(h.indexOf('#q=')===0){st.city=h.slice(3);if(!st.ci||st.ci<=today()){st.ci=addDays(today(),14);st.co=addDays(today(),16);}render();runSearch();}
+  else if(h.indexOf('#sug=')===0){st.step='dest';st.city='';render();var e=$('dest');e.value=h.slice(5);sug(e.value);}
+  else if(h==='#cal'){st.city=st.city||'東京';st.step='cal';st.ci=addDays(today(),14);st.co=addDays(today(),16);render();}
+  else if(st.step==='result'&&st.city&&st.ci>today()&&!R&&!LOADING){render();runSearch();}
+  else{if(st.step==='result'&&!R)st.step=st.city?'cal':'dest';render();}}
+window.addEventListener('hashchange',route);
+/* ---------- 返回鍵：一個守門 history 項目吸收返回，依序關 sheet → 回上一頁 → 結果回日曆/目的地 → 首頁再按一次離開 ---------- */
+var BACK_T=0,NAV_MAIN=['search','mine','stays','alerts','more'];
+function guardPush(){try{if(!(history.state&&history.state.fan==='g'))history.pushState({fan:'g'},'',location.pathname+location.search);}catch(e){}}
+window.addEventListener('popstate',function(){
+  if($('sheet')){closeSheet();guardPush();return;}
+  if(NAV_MAIN.indexOf(tab)<0){tab=(['about','privacy','terms','help','plan','notifset'].indexOf(tab)>=0)?'more':'search';render();window.scrollTo(0,0);guardPush();return;}
+  if(tab!=='search'){tab='search';render();guardPush();return;}
+  if(st.step==='result'){st.step='cal';saveSt();render();guardPush();return;}
+  if(st.step==='cal'){st.step='dest';saveSt();render();guardPush();return;}
+  if(Date.now()-BACK_T<2000){history.back();return;}
+  BACK_T=Date.now();toast('再按一次離開');guardPush();});
+(function init(){
+  var sp=$('splash');setTimeout(function(){sp.classList.add('out');setTimeout(function(){sp.remove();},400);},500);
+  fromQuery();if(st.step==='result'&&!location.hash){render();runSearch();}else route();
+  try{history.replaceState({fan:'r'},'',location.pathname+location.search+location.hash);}catch(e){}guardPush();
+  setTimeout(shareIn,600);
+  nfyDot();annLoad();swDev();
+  if(API)post({action:'sync'}).then(syncFrom).catch(function(){});
+  if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',function(ev){if(ev.data&&ev.data.link){location.hash=ev.data.link.replace(/^.*#/,'#');tab='alerts';post({action:'sync'}).then(syncFrom).catch(function(){});render();}});
+})();
+
+</script>
+</body>
+</html>
