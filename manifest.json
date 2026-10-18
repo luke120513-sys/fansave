@@ -2,7 +2,7 @@
  "id": "/fansave/",
  "name": "飯省 FanSave",
  "short_name": "飯省",
- "description": "找 CP 值最高的飯店",
+ "description": "找 CP 值最高的飯店：即時房價、離車站距離、評分與降價通知",
  "lang": "zh-TW",
  "dir": "ltr",
  "start_url": "/fansave/",
@@ -31,27 +31,20 @@
    "purpose": "maskable"
   }
  ],
- "share_target": {
-  "action": "/fansave/share-target",
-  "method": "POST",
-  "enctype": "multipart/form-data",
-  "params": {
-   "title": "title",
-   "text": "text",
-   "url": "url",
-   "files": [
-    {
-     "name": "image",
-     "accept": [
-      "image/*",
-      ".jpg",
-      ".jpeg",
-      ".png",
-      ".webp",
-      ".heic"
-     ]
-    }
-   ]
+ "screenshots": [
+  {
+   "src": "/fansave/screenshots/home.png",
+   "sizes": "420x900",
+   "type": "image/png",
+   "form_factor": "narrow",
+   "label": "首頁搜尋"
+  },
+  {
+   "src": "/fansave/screenshots/results.png",
+   "sizes": "400x860",
+   "type": "image/png",
+   "form_factor": "narrow",
+   "label": "飯店結果"
   }
- }
+ ]
 }
