@@ -420,7 +420,7 @@ function siteFoot(){var ctx=st.city&&st.ci&&st.co&&(tab==='search'&&st.step==='r
   var r1=rb('coffee','贊助','href="'+SPONSOR_URL+'" target="_blank" rel="noopener"')+rb('share','分享','data-act="share"')+(SOC.ig?rb('ig','IG','href="'+SOC.ig+'" target="_blank" rel="noopener"'):'')+(SOC.threads?rb('threads','Threads','href="'+SOC.threads+'" target="_blank" rel="noopener"'):'');
   var r3='<a class="sis sis-fly" href="'+esc(fu)+'" target="_blank" rel="noopener"><img alt="" aria-hidden="true" src="'+ICO['fly@fly']+'">飛省 查機票</a><a class="sis sis-trip" href="'+esc(tu)+'" target="_blank" rel="noopener"><img alt="" aria-hidden="true" src="'+ICO['suitcase@trip']+'">旅伴 規劃行程</a>';
   return '<footer class="xft"><div class="xr1">'+r1+'</div><div class="xr2"><a href="#" data-act="go:about">關於我們</a><i>|</i><a href="#" data-act="go:privacy">隱私權政策</a><i>|</i><a href="#" data-act="go:terms">服務條款</a><i>|</i><a href="mailto:'+CONTACT+'?subject='+encodeURIComponent('飯省 聯絡')+'">聯絡我們</a></div><div class="xr3">'+r3+'</div><div class="xvw" id="fsviews"'+(viewsTxt()?'':' hidden')+'>'+viewsTxt()+'</div><div class="xcp">© 2026 飯省 FanSave・價格以新台幣（TWD）顯示・'+VER+'</div></footer>';}
-var CONTACT='aicode1911@gmail.com', SPONSOR_URL='https://portaly.cc/dreamworld369/support', VER='v2.8.4'; var MAIL='<a href="mailto:'+CONTACT+'" style="color:var(--accent,#C2410C);text-decoration:underline;font-weight:600">'+CONTACT+'</a>';
+var CONTACT='aicode1911@gmail.com', SPONSOR_URL='https://portaly.cc/dreamworld369/support', VER='v2.8.5'; var MAIL='<a href="mailto:'+CONTACT+'" style="color:var(--accent,#C2410C);text-decoration:underline;font-weight:600">'+CONTACT+'</a>';
 function $(i){return document.getElementById(i);}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function lsg(k,d){k=k.replace(/^fs_/,'fan_');try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
@@ -765,9 +765,12 @@ var TRIP_URL='https://luke120513-sys.github.io/trip/',FROMTRIP=false,BYTRIP=fals
 function curTrip(){try{var t=JSON.parse(localStorage.getItem('shared_curTrip')||'null');return t&&(t.dest||t.city)?t:null;}catch(e){return null;}}
 function addToTrip(type,data){var k='shared_tripInbox',a;try{a=JSON.parse(localStorage.getItem(k)||'[]');if(!Array.isArray(a))a=[];}catch(e){a=[];}
   a.push({type:type,tripId:(curTrip()||{}).id,data:data,addedAt:Date.now()});localStorage.setItem(k,JSON.stringify(a));}
-function hotelToTrip(x){var nn=nights(st.ci,st.co),d={name:x.name,checkin:st.ci,checkout:st.co,price:Math.round(x.price*nn),link:bookUrl(x)};if(x.lat&&x.lng){d.lat=x.lat;d.lng=x.lng;}
+function hotelToTrip(x){var nn=nights(st.ci,st.co),d={name:x.name,checkin:st.ci,checkout:st.co,price:Math.round(x.price*nn),link:bookUrl(x)};if(x.lat&&x.lng){d.lat=Math.round(x.lat*1e5)/1e5;d.lng=Math.round(x.lng*1e5)/1e5;}
   if(!/^(https?:\/\/|\/)/.test(d.link||''))delete d.link;addToTrip('hotel',d);
-  var t=curTrip();toastH(ic('suitcase@trip',18)+' 已加入旅伴行程'+(t&&t.city?'（'+esc(t.city)+'）':'')+'<a href="/trip/">查看 ›</a>');}
+  var t=curTrip();toastH(ic('suitcase@trip',18)+' 已加入旅伴行程'+(t&&t.city?'（'+esc(t.city)+'）':'')+'<a href="'+esc(tripAddUrl(d,t))+'">查看 ›</a>');}
+/* iPhone 主畫面 App 與 Safari 的 localStorage 不共用 → 另用網址 add= 帶過去（trip-add-param-request.md），inbox 照寫 */
+function tripAddUrl(d,t){var o={v:1,type:'hotel',data:d};if(t&&t.id)o.tripId=t.id;var c=String(st.city||'').trim(),k=c.toLowerCase(),dest=/^[A-Z]{3}$/.test(c)?c:C2I[k]||C2I[ZH2EN[c]||'']||c;
+  return '/trip/?from=fansave&add='+encodeURIComponent(JSON.stringify(o))+(dest?'&dest='+encodeURIComponent(dest):'')+'&dep='+d.checkin+'&ret='+d.checkout;}
 function toastH(h){var e=$('toast');e.innerHTML=h;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on');},3500);}
 function xswLinks(){var t=curTrip(),f=$('xsw-fly'),tr=$('xsw-trip');if(!f)return;[['xsw-fly','fly@fly'],['xsw-fan','hotel'],['xsw-trip','suitcase@trip']].forEach(function(a){var x=document.querySelector('#'+a[0]+' .xi');if(x&&!x.dataset.i){x.dataset.i=1;x.innerHTML=ic(a[1],18);}});
   if(t&&t.dest){var d=t.dep&&t.dep>today()?'&dep='+t.dep+(t.ret?'&ret='+t.ret:''):'';f.href='/flysave/?to='+encodeURIComponent(t.dest)+d+'&pax='+(t.pax||2)+'&orig='+(t.orig||'TPE')+'&from=fansave';}else f.href='/flysave/';
