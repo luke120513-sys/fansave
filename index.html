@@ -114,7 +114,7 @@ html.dark .rbtn{color:#B3A190}html.dark .rbtn img,html.dark .sis img{box-shadow:
 .links a{flex:1;text-align:center;border:2px solid var(--g);color:var(--g);border-radius:20px;padding:8px 0;font-size:14px;font-weight:800;text-decoration:none}
 .links.small a{font-size:12px;padding:4px 0;border-width:1.5px}
 .empty{text-align:center;color:#777;font-size:14px;padding:24px 10px}
-.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#333;color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;transition:.3s;pointer-events:none;z-index:9;max-width:90%}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#333;color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;transition:.3s;pointer-events:none;z-index:30;max-width:min(92vw,440px);line-height:1.45}
 .toast.on{opacity:.95}
 .help h3{font-size:16px;margin:4px 0 6px}
 .help p,.help li{font-size:14px;line-height:1.7;color:#333}
@@ -420,11 +420,19 @@ function siteFoot(){var ctx=st.city&&st.ci&&st.co&&(tab==='search'&&st.step==='r
   var r1=rb('coffee','贊助','href="'+SPONSOR_URL+'" target="_blank" rel="noopener"')+rb('share','分享','data-act="share"')+(SOC.ig?rb('ig','IG','href="'+SOC.ig+'" target="_blank" rel="noopener"'):'')+(SOC.threads?rb('threads','Threads','href="'+SOC.threads+'" target="_blank" rel="noopener"'):'');
   var r3='<a class="sis sis-fly" href="'+esc(fu)+'" target="_blank" rel="noopener"><img alt="" aria-hidden="true" src="'+ICO['fly@fly']+'">飛省 查機票</a><a class="sis sis-trip" href="'+esc(tu)+'" target="_blank" rel="noopener"><img alt="" aria-hidden="true" src="'+ICO['suitcase@trip']+'">旅伴 規劃行程</a>';
   return '<footer class="xft"><div class="xr1">'+r1+'</div><div class="xr2"><a href="#" data-act="go:about">關於我們</a><i>|</i><a href="#" data-act="go:privacy">隱私權政策</a><i>|</i><a href="#" data-act="go:terms">服務條款</a><i>|</i><a href="mailto:'+CONTACT+'?subject='+encodeURIComponent('飯省 聯絡')+'">聯絡我們</a></div><div class="xr3">'+r3+'</div><div class="xvw" id="fsviews"'+(viewsTxt()?'':' hidden')+'>'+viewsTxt()+'</div><div class="xcp">© 2026 飯省 FanSave・價格以新台幣（TWD）顯示・'+VER+'</div></footer>';}
-var CONTACT='aicode1911@gmail.com', SPONSOR_URL='https://portaly.cc/dreamworld369/support', VER='v2.8.7'; var MAIL='<a href="mailto:'+CONTACT+'" style="color:var(--accent,#C2410C);text-decoration:underline;font-weight:600">'+CONTACT+'</a>';
+var CONTACT='aicode1911@gmail.com', SPONSOR_URL='https://portaly.cc/dreamworld369/support', VER='v2.9.0'; var MAIL='<a href="mailto:'+CONTACT+'" style="color:var(--accent,#C2410C);text-decoration:underline;font-weight:600">'+CONTACT+'</a>';
 function $(i){return document.getElementById(i);}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function lsg(k,d){k=k.replace(/^fs_/,'fan_');try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
-function lss(k,v){k=k.replace(/^fs_/,'fan_');try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+var STORE_ERR='';
+function storeFail(e){
+  var quota=e&&(e.name==='QuotaExceededError'||e.code===22||e.code===1014);
+  STORE_ERR=quota
+    ?'無法儲存：瀏覽器的儲存空間已滿。請清出一些空間，或到「我的住宿」按「匯出備份」把資料存成檔案。剛剛這筆沒有存成功，重新整理後會消失。'
+    :'無法儲存：這台瀏覽器沒有把資料寫進去（可能是無痕模式，或網站資料被關閉）。請改用一般視窗，或先匯出備份。剛剛這筆沒有存成功，重新整理後會消失。';
+  var now=Date.now();if(!storeFail.at||now-storeFail.at>5000){storeFail.at=now;toast('⚠️ '+STORE_ERR,6000);}
+  return false;}
+function lss(k,v){k=k.replace(/^fs_/,'fan_');try{localStorage.setItem(k,JSON.stringify(v));STORE_ERR='';return true;}catch(e){return storeFail(e);}}
 /* 飛省和飯省在同一個網域（luke120513-sys.github.io），localStorage 共用。v2.0.2 起飯省一律用 fan_ 開頭，
    只搬飯省自己才有的資料；fs_push／fs_myq 屬於飛省，不搬（之前誤讀到飛省的「通知已開啟」）。 */
 (function(){try{if(localStorage.getItem('fan_mig'))return;['stays','det','st','last','ann','alerts','seen'].forEach(function(k){var v=localStorage.getItem('fs_'+k);if(v!=null&&localStorage.getItem('fan_'+k)==null)localStorage.setItem('fan_'+k,v);});
@@ -437,7 +445,7 @@ function md(s){return s?(+s.slice(5,7))+'/'+(+s.slice(8,10)):'';}
 function wd(s){return '日一二三四五六'[new Date(s+'T00:00:00Z').getUTCDay()];}
 function money(n){return 'NT$'+Math.round(n).toLocaleString();}
 function rateTxt(v){var n=typeof v==='number'?v:Number(v);return (v!=null&&v!==''&&isFinite(n)&&n>0)?n.toFixed(1):'';}
-function toast(t){var e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on');},2200);}
+function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on');},ms||2200);}
 function buzz(){try{navigator.vibrate&&navigator.vibrate(8);}catch(e){}}
 function chip(l,act,on){return '<button class="chip'+(on?' on':'')+'" data-act="'+esc(act)+'">'+l+'</button>';}
 function bar(n,t){var h='<div class="stepbar">';for(var i=1;i<=t;i++)h+='<i'+(i<=n?' class="on"':'')+'></i>';return h+'</div>';}
@@ -448,6 +456,7 @@ var tab='search', sub=null, st=lsg('fs_st',null)||{step:'dest',city:'',ci:'',co:
 if(st.step==='result'&&(!st.ci||st.ci<=today()))st.step='dest';if(!st.sort||st.sort==='cp'){st.sort='pop';}
 var R=null, LOADING=false, MYQ=lsg('fs_myq',[]), ALERTS=lsg('fs_alerts',[]), STAYS=lsg('fs_stays',[]), DET=lsg('fs_det',{}), PUSH=lsg('fs_push','off'), ANN=lsg('fs_ann',[]);
 var TABS=['search','mine','stays','alerts','more'], SUBS=['about','privacy','terms','help','plan','notifset'];
+ensureStableIds();
 /* 評分依評論數加權（評論少的往 8.0 拉），避免「9.1 分、40 則」排第一 */
 function adjR(h){var v=h.reviews||0,m=150,C=8.0;return h.rating?(v/(v+m))*h.rating+(m/(v+m))*C:0;}
 /* 交通便利係數：最近車站步行距離（≤300m 最好），再依離市中心距離微調；查不到 = 0.95 */
@@ -604,13 +613,13 @@ function hotelSheet(i){var x=VIEW[i],nn=nights(st.ci,st.co),q=encodeURIComponent
 
 /* ---------- 我的查詢（照飛省：每台裝置一份，存在伺服器） ---------- */
 function post(body){if(!API)return Promise.reject(new Error('no api'));body.dev=DEV;return fetchJson(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)});}
-function syncFrom(j){if(!j||!j.ok)return;if(typeof j.push==='boolean'&&!syncFrom.pc){syncFrom.pc=1;pushCheck(j.push);}if(j.searches&&!j.searches.length&&MYQ.length&&!syncFrom.up){syncFrom.up=1;MYQ.slice().reverse().forEach(function(q){post({action:'saveSearch',q:q,base:q.base||0,top:q.top||[]}).catch(function(){});});j.searches=MYQ;}
-  if(j.alerts&&!j.alerts.length&&ALERTS.length)j.alerts=ALERTS;if(j.searches){MYQ=j.searches;lss('fs_myq',MYQ);}if(j.alerts){ALERTS=j.alerts;lss('fs_alerts',ALERTS);}nfyDot();render();}
+function syncFrom(j){if(!j||!j.ok)return;if(typeof j.push==='boolean'&&!syncFrom.pc){syncFrom.pc=1;pushCheck(j.push);}if(j.searches&&!j.searches.length&&MYQ.length&&!syncFrom.up){syncFrom.up=1;ensureStableIds();MYQ.slice().reverse().forEach(function(q){post({action:'saveSearch',q:q,base:q.base||0,top:q.top||[]}).catch(function(){});});j.searches=MYQ;}
+  if(j.alerts&&!j.alerts.length&&ALERTS.length)j.alerts=ALERTS;if(j.searches){MYQ=mergeSearchesFromServer(j.searches);lss('fs_myq',MYQ);}if(j.alerts){ALERTS=j.alerts;lss('fs_alerts',ALERTS);}nfyDot();render();flushSearchPend();}
 function mine(){
-  var h='<div class="panel"><p class="step">📋 我的查詢</p><p class="note" style="margin:0">存下的查詢每天 09:00 自動重查，降價 5% 以上會發<b>系統通知</b>。最多 10 組。</p></div>';
+  var h=storeBanner()+'<div class="panel"><p class="step">📋 我的查詢</p><p class="note" style="margin:0">存下的查詢每天 09:00 自動重查，降價 5% 以上會發<b>系統通知</b>。最多 10 組。換手機時，到「我的住宿」匯出備份，查詢會一起帶走。</p></div>';
   if(!MYQ.length)return h+'<div class="empty">還沒有存下的查詢。<br>查完飯店後按「🔔 存下這個查詢」。</div><button class="btn" data-act="tab:search">🔍 去找飯店</button>';
-  return h+MYQ.map(function(q,i){var past=q.ci<today();return '<div class="card"><div class="dest" style="font-size:17px;font-weight:800">📍 '+esc(q.city)+'</div><p class="note" style="margin:4px 0 8px">'+md(q.ci)+'（'+wd(q.ci)+'）→ '+md(q.co)+'・'+nights(q.ci,q.co)+' 晚・'+q.g+' 人'+(q.base?'・存下時最低 '+money(q.base):'')+(past?'・<b style="color:var(--tip)">已過期</b>':'')+'</p>'+
-    '<button class="btn" data-act="qo:'+i+'" style="margin-top:0">查看最新價格</button><div class="tgl"><span>🔔 降價通知</span><button class="sw'+(q.notify!==false?' on':'')+'" data-act="qn:'+i+'" aria-label="降價通知"></button></div>'+chip('刪除','qd:'+i).replace('class="chip"','class="chip mfdel"')+'</div>';}).join('');
+  return h+MYQ.map(function(q){var past=q.ci<today(),id=esc(q.id||'');return '<div class="card"><div class="dest" style="font-size:17px;font-weight:800">📍 '+esc(q.city)+'</div><p class="note" style="margin:4px 0 8px">'+md(q.ci)+'（'+wd(q.ci)+'）→ '+md(q.co)+'・'+nights(q.ci,q.co)+' 晚・'+q.g+' 人'+(q.base?'・存下時最低 '+money(q.base):'')+(past?'・<b style="color:var(--tip)">已過期</b>':'')+'</p>'+
+    '<button class="btn" data-act="qo:'+id+'" style="margin-top:0">查看最新價格</button><div class="tgl"><span>🔔 降價通知</span><button class="sw'+(q.notify!==false?' on':'')+'" data-act="qn:'+id+'" aria-label="降價通知"></button></div>'+chip('刪除','qd:'+(q.id||'')).replace('class="chip"','class="chip mfdel"')+'</div>';}).join('');
 }
 /* ---------- 降價通知（系統通知 Web Push） ---------- */
 function alertsView(){
@@ -653,11 +662,182 @@ function pushOn(){
 function pushOff(){navigator.serviceWorker.ready.then(function(r){return r.pushManager.getSubscription();}).then(function(s){if(s)s.unsubscribe();}).catch(function(){});post({action:'unsubscribe'}).catch(function(){});PUSH='off';lss('fs_push','off');toast('已關閉通知');render();}
 function swDev(){try{var o=indexedDB.open('fansave',1);o.onupgradeneeded=function(){o.result.createObjectStore('kv');};o.onsuccess=function(){var tx=o.result.transaction('kv','readwrite');tx.objectStore('kv').put({dev:DEV,api:API},'meta');};}catch(e){}}
 
+/* ---------- 穩定 id、備份（選用，不需登入） ----------
+   這支 App 沒有登入。身份只有本機匿名裝置碼 fan_dev，推播訂閱也不是帳號。
+   備份因此做成檔案匯出／匯入，不擋任何功能。雲端備份要另做帳號，後端不在這個專案。
+   查詢的開關／刪除：伺服器只認索引 i（多送 id 沒關係，不送 i 會刪到第一筆）。
+   伺服器不會存客戶端 id，只會回傳 saved 時間戳。本機用 id 認人，有 saved 才算進伺服器那一列。 */
+function nid(p){return p+Math.random().toString(36).slice(2,8)+Date.now().toString(36);}
+function isId(x){return typeof x==='string'&&/^[a-z][a-z0-9]{4,40}$/.test(x);}
+function ensureStableIds(){
+  var cs=0,cm=0;
+  if(!Array.isArray(STAYS))STAYS=[];
+  STAYS.forEach(function(s){if(s&&typeof s==='object'&&!isId(s.id)){s.id=nid('s');cs++;}});
+  if(!Array.isArray(MYQ))MYQ=[];
+  MYQ.forEach(function(q){if(q&&typeof q==='object'&&!isId(q.id)){q.id=nid('q');cm++;}});
+  if(cs)lss('fs_stays',STAYS);
+  if(cm)lss('fs_myq',MYQ);}
+function qSig(q){return [q&&q.city||'',q&&q.ci||'',q&&q.co||'',String(q&&q.g!=null?q.g:'')].join('\t');}
+function qById(id){for(var i=0;i<MYQ.length;i++)if(MYQ[i]&&MYQ[i].id===id)return i;return -1;}
+var QPEND={};
+function serverIndex(q){
+  if(!q||q.saved==null)return -1;
+  var n=0;
+  for(var i=0;i<MYQ.length;i++){if(MYQ[i].saved==null)continue;if(MYQ[i].id===q.id)return n;n++;}
+  return -1;}
+function mergeSearchesFromServer(list){
+  if(!Array.isArray(list))return MYQ.slice();
+  var prev=MYQ.slice(),used={},out=[],jobs=[],si=-1;
+  function take(pred){for(var i=0;i<prev.length;i++){if(!used[i]&&prev[i]&&pred(prev[i])){used[i]=1;return prev[i];}}return null;}
+  list.forEach(function(q){
+    if(!q||typeof q!=='object')return;
+    si++;
+    var old=(q.saved!=null&&take(function(p){return p.saved===q.saved;}))||take(function(p){return qSig(p)===qSig(q);});
+    var o={city:q.city,ci:q.ci,co:q.co,g:q.g,notify:q.notify!==false};
+    if(q.budget!=null)o.budget=q.budget;if(q.base!=null)o.base=q.base;if(q.top)o.top=q.top;if(q.saved!=null)o.saved=q.saved;
+    o.id=(old&&isId(old.id))?old.id:(isId(q.id)?q.id:nid('q'));
+    var pend=QPEND[qSig(o)],sig=qSig(o);
+    if(pend&&pend.del){jobs.push({act:'delSearch',i:si,sig:sig});return;}
+    if(pend&&pend.notify!=null&&(o.notify!==false)!==(pend.notify!==false)){jobs.push({act:'toggleNotify',i:si,sig:sig});o.notify=pend.notify!==false;}
+    out.push(o);});
+  for(var i=0;i<prev.length;i++){if(used[i])continue;var p=prev[i];if(!p||p.saved!=null)continue;if(QPEND[qSig(p)]&&QPEND[qSig(p)].del)continue;if(!out.some(function(s){return qSig(s)===qSig(p);}))out.unshift(p);}
+  jobs.sort(function(a,b){return a.i-b.i;});
+  mergeSearchesFromServer.jobs=jobs;
+  return out;}
+function flushSearchPend(){
+  if(flushSearchPend.busy)return;
+  var jobs=mergeSearchesFromServer.jobs||[];
+  mergeSearchesFromServer.jobs=null;
+  if(!jobs.length)return;
+  var job=jobs[0];
+  flushSearchPend.busy=1;
+  post({action:job.act,i:job.i}).then(function(j){delete QPEND[job.sig];flushSearchPend.busy=0;syncFrom(j);}).catch(function(){flushSearchPend.busy=0;});}
+function storeBanner(){return STORE_ERR?'<div id="storewarn" role="alert" class="panel" style="color:var(--tip);font-weight:800;line-height:1.55">⚠️ '+esc(STORE_ERR)+'</div>':'';}
+function clipStr(v,n){return String(v==null?'':v).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,'').trim().slice(0,n);}
+function isYmd(s){if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s))return false;var t=new Date(s+'T00:00:00Z');return !isNaN(t.getTime())&&t.toISOString().slice(0,10)===s;}
+function normName(s){return clipStr(s,80).replace(/\s+/g,' ').toLowerCase();}
+function cleanStay(raw){
+  if(!raw||typeof raw!=='object'||Array.isArray(raw))return null;
+  var name=clipStr(raw.name,80);
+  if(!name||!isYmd(raw.ci)||!isYmd(raw.co)||raw.co<=raw.ci)return null;
+  var s={name:name,ci:raw.ci,co:raw.co,g:2};
+  if(isId(raw.id))s.id=raw.id;
+  ['city','cit','cot','conf','room','cancel','phone','addr','guest','note','plat','station','area'].forEach(function(k){if(raw[k]!=null&&String(raw[k]).trim())s[k]=clipStr(raw[k],k==='addr'||k==='note'?120:60);});
+  if(raw.hotelId!=null&&/^\d{1,12}$/.test(String(raw.hotelId)))s.hotelId=String(raw.hotelId);
+  var g=+raw.g;if(g>=1&&g<=12)s.g=Math.round(g);
+  var price=+raw.price;if(isFinite(price)&&price>0&&price<1e9)s.price=Math.round(price);
+  if(typeof raw.cur==='string'&&/^[A-Z]{3}$/.test(raw.cur))s.cur=raw.cur;
+  ['stationM','walkMin'].forEach(function(k){var n=+raw[k];if(isFinite(n)&&n>=0&&n<1e6)s[k]=Math.round(n);});
+  if(raw.tgen)s.tgen=1;
+  return s;}
+function cleanSearch(raw){
+  if(!raw||typeof raw!=='object'||Array.isArray(raw))return null;
+  var city=clipStr(raw.city,40);
+  if(!city||!isYmd(raw.ci)||!isYmd(raw.co)||raw.co<=raw.ci)return null;
+  var g=+raw.g;if(!(g>=1&&g<=12))g=2;
+  var q={city:city,ci:raw.ci,co:raw.co,g:Math.round(g),notify:raw.notify!==false,budget:0};
+  var b=+raw.budget;if(isFinite(b)&&b>=0&&b<1e8)q.budget=Math.round(b);
+  var base=+raw.base;if(isFinite(base)&&base>0&&base<1e8)q.base=Math.round(base);
+  if(isId(raw.id))q.id=raw.id;
+  if(Array.isArray(raw.top))q.top=raw.top.slice(0,5).map(function(h){if(!h||typeof h!=='object')return null;var nm=clipStr(h.name,80),pr=+h.price;if(!nm||!isFinite(pr))return null;return {name:nm,price:Math.round(pr)};}).filter(Boolean);
+  return q;}
+function parseBackup(text){
+  text=String(text==null?'':text).replace(/^\uFEFF/,'');
+  if(text.length>1500000)return {ok:false,msg:'這個檔案太大，沒有匯入。'};
+  var data;try{data=JSON.parse(text);}catch(e){return {ok:false,msg:'這個檔案不是正確的 JSON。請選擇飯省「匯出備份」產生的檔案。'};}
+  if(!data||typeof data!=='object'||Array.isArray(data)||data.app!=='fansave')return {ok:false,msg:'這不是飯省的備份檔。請選擇用「匯出備份」下載的檔案。'};
+  if(!Array.isArray(data.stays)&&!Array.isArray(data.searches))return {ok:false,msg:'備份檔裡沒有住宿或查詢資料。'};
+  var stays=[],searches=[],bad=0,sl=Array.isArray(data.stays)?data.stays:[],ql=Array.isArray(data.searches)?data.searches:[];
+  sl.slice(0,300).forEach(function(s){var c=cleanStay(s);if(c)stays.push(c);else bad++;});
+  if(sl.length>300)bad+=sl.length-300;
+  ql.slice(0,30).forEach(function(q){var c=cleanSearch(q);if(c)searches.push(c);else bad++;});
+  if(ql.length>30)bad+=ql.length-30;
+  if(!stays.length&&!searches.length)return {ok:false,msg:bad?'檔案裡的資料格式不對，沒有匯入。':'備份檔裡沒有住宿或查詢資料。'};
+  return {ok:true,stays:stays,searches:searches,bad:bad};}
+function sameStay(a,b){
+  if(a.id&&b.id&&a.id===b.id)return true;
+  if(normName(a.name)!==normName(b.name)||a.ci!==b.ci||a.co!==b.co)return false;
+  if((a.conf||'')===(b.conf||''))return true;
+  return !a.conf||!b.conf;}
+function findStay(s){
+  var loose=-1;
+  for(var n=0;n<STAYS.length;n++){
+    var t=STAYS[n];
+    if(!t)continue;
+    if(s.id&&t.id&&s.id===t.id)return n;
+    if(normName(t.name)!==normName(s.name)||t.ci!==s.ci||t.co!==s.co)continue;
+    if((t.conf||'')===(s.conf||''))return n;
+    if((!t.conf||!s.conf)&&loose<0)loose=n;}
+  return loose;}
+function backupPayload(){
+  ensureStableIds();
+  return {app:'fansave',v:1,exportedAt:new Date().toISOString(),stays:JSON.parse(JSON.stringify(STAYS)),searches:MYQ.map(function(q){var o={};['id','city','ci','co','g','budget','notify','base','top'].forEach(function(k){if(q[k]!=null)o[k]=q[k];});return o;})};}
+function pushSearches(list){
+  var i=0;(function next(){if(i>=list.length)return;var q=list[i++];if(!q)return next();
+    post({action:'saveSearch',q:{city:q.city,ci:q.ci,co:q.co,g:q.g,budget:q.budget||0,notify:q.notify!==false,id:q.id},base:q.base||0,top:q.top||[]}).then(function(j){syncFrom(j);next();}).catch(function(){next();});})();}
+function applyBackup(p){
+  var snapS=JSON.parse(JSON.stringify(STAYS)),snapQ=JSON.parse(JSON.stringify(MYQ));
+  var addS=0,updS=0,addQ=0,skipQ=0,toPost=[];
+  p.stays.forEach(function(s){
+    var i=findStay(s);
+    if(i<0){if(!isId(s.id))s.id=nid('s');STAYS.push(s);addS++;return;}
+    var t=STAYS[i],changed=false;
+    Object.keys(s).forEach(function(k){if(k==='id')return;if(s[k]==null||s[k]==='')return;if(t[k]==null||t[k]===''){t[k]=s[k];changed=true;}});
+    if(!isId(t.id)){t.id=isId(s.id)?s.id:nid('s');changed=true;}
+    if(changed)updS++;});
+  p.searches.forEach(function(q){
+    for(var n=0;n<MYQ.length;n++){var m=MYQ[n];if((q.id&&m.id&&q.id===m.id)||qSig(m)===qSig(q))return;}
+    if(MYQ.length>=10){skipQ++;return;}
+    if(!isId(q.id))q.id=nid('q');
+    delete q.saved;MYQ.unshift(q);addQ++;toPost.push(q);});
+  if(!lss('fs_stays',STAYS)||!lss('fs_myq',MYQ)){
+    var fail=STORE_ERR||'無法儲存匯入的資料。請清出空間後再試一次。';
+    STAYS.length=0;snapS.forEach(function(s){STAYS.push(s);});
+    MYQ.length=0;snapQ.forEach(function(q){MYQ.push(q);});
+    lss('fs_stays',STAYS);lss('fs_myq',MYQ);
+    STORE_ERR=fail;
+    return {ok:false,msg:fail};}
+  if(addS||updS)syncStays();
+  if(toPost.length)pushSearches(toPost);
+  var parts=[];
+  if(addS)parts.push('加入 '+addS+' 筆住宿');
+  if(updS)parts.push('補上 '+updS+' 筆住宿原先空白的欄位');
+  if(addQ)parts.push('加入 '+addQ+' 組查詢');
+  var msg=parts.length?('已'+parts.join('、')+'。相同的資料不會重複加進來。'):'這些資料本來就在這台裝置上，沒有重複加進來。';
+  if(p.bad)msg+=' 有 '+p.bad+' 筆格式不對，已略過。';
+  if(skipQ)msg+=' 查詢最多 10 組，多的 '+skipQ+' 組沒有加入。';
+  return {ok:true,msg:msg,addS:addS,updS:updS,addQ:addQ};}
+function exportBackup(){
+  var data=backupPayload();
+  if(!(data.stays&&data.stays.length)&&!(data.searches&&data.searches.length)){toast('還沒有可以備份的住宿或查詢');return;}
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='fansave-backup-'+today()+'.json';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href);},1500);
+  toast('✅ 已匯出備份，檔案在你的下載資料夾');}
+function importBackupFile(file){
+  if(!file)return;
+  if(file.size>1500000){toast('⚠️ 這個檔案太大，沒有匯入。');return;}
+  var rd=new FileReader();
+  rd.onerror=function(){toast('⚠️ 讀不到這個檔案，請再選一次。');};
+  rd.onload=function(){
+    var p=parseBackup(String(rd.result||''));
+    if(!p.ok){toast('⚠️ '+p.msg,5000);return;}
+    var r=applyBackup(p);
+    if(!r.ok){toast('⚠️ '+(r.msg||'無法儲存匯入的資料'),6000);return;}
+    tab='stays';render();toast('✅ '+r.msg,5200);};
+  rd.readAsText(file,'utf-8');}
+function showStoreWarn(where){
+  var sh=where||$('sheet'),sw=$('storewarn');if(sw&&sh&&sh.contains(sw))sw.remove();
+  if(!sh)return;var p=document.createElement('p');p.id='storewarn';p.setAttribute('role','alert');
+  p.style.cssText='color:#C25E00;font-weight:800;line-height:1.55;margin:10px 0 0';
+  p.textContent='⚠️ '+(STORE_ERR||'無法儲存，請稍後再試');sh.appendChild(p);
+  try{p.scrollIntoView({block:'nearest'});}catch(e){}}
+
 /* ---------- 我的住宿（照飛省「我的航班」：存在這台裝置） ---------- */
 var AMI=[[/wi-?fi|internet|網路/i,'📶 Wi-Fi'],[/breakfast|早餐/i,'🍳 早餐'],[/parking|停車/i,'🅿️ 停車'],[/pool|游泳/i,'🏊 泳池'],[/shuttle|接駁/i,'🚐 機場接駁'],[/gym|fitness|健身/i,'🏋️ 健身房'],[/laundry|洗衣/i,'🧺 洗衣'],[/restaurant|餐廳/i,'🍽️ 餐廳'],[/luggage|行李/i,'🧳 行李寄放'],[/spa|onsen|溫泉|bath/i,'♨️ 溫泉/SPA'],[/air condition|空調/i,'❄️ 空調'],[/elevator|電梯/i,'🛗 電梯']];
 function amen(list){var out=[];AMI.forEach(function(a){if((list||[]).some(function(x){return a[0].test(x);}))out.push(a[1]);});return out;}
 function stays(){
-  var h='<div class="panel"><p class="step">🧳 我訂購的飯店</p><button class="btn" data-act="snew" style="margin-top:4px">＋ 新增住宿</button><input type="file" id="shotin" accept="image/*" hidden><p class="note" style="margin:8px 2px 0">可以直接貼上訂房確認信，自動帶入飯店、日期、確認號碼。會自動補上<b>入住／退房時間、設施、地址</b>。入住前一天、退房當天早上會提醒你。資料存在這台裝置。</p></div>';
+  var h=storeBanner()+'<div class="panel"><p class="step">🧳 我訂購的飯店</p><button class="btn" data-act="snew" style="margin-top:4px">＋ 新增住宿</button><input type="file" id="shotin" accept="image/*" hidden><p class="note" style="margin:8px 2px 0">可以直接貼上訂房確認信，自動帶入飯店、日期、確認號碼。會自動補上<b>入住／退房時間、設施、地址</b>。入住前一天、退房當天早上會提醒你。資料存在這台裝置，不用登入。</p><div class="chips" style="margin-top:10px"><button type="button" class="chip" data-act="bkout">匯出備份</button><button type="button" class="chip" data-act="bkin">匯入備份</button></div><input type="file" id="bkin" accept="application/json,.json" hidden><p class="note" style="margin:8px 2px 0">備份是選用的，不影響找飯店和通知。匯出會把我的住宿和存下的查詢存成一個檔案，放在你自己的手機或電腦；換裝置時再匯入，已經有的不會重複加。</p></div>';
   if(!STAYS.length)return h+'<div class="empty">還沒有訂購的飯店。</div>';
   var t=today();
   return h+STAYS.slice().sort(function(a,b){return a.ci<b.ci?-1:1;}).map(function(s){var i=STAYS.indexOf(s),d=DET[s.name]||{},dd=nights(t,s.ci),past=s.co<t;
@@ -817,15 +997,15 @@ function page(t,b){return '<div class="panel legal"><p class="step">'+t+'</p>'+b
 function plan(){return page('💎 方案與贊助','<div class="plan rec"><b>免費版</b>・<b class="p">NT$0</b><p>找飯店、CP 值排序、我的查詢、降價系統通知、我訂購的飯店，全部免費。</p></div>'+
   '<div class="plan" style="opacity:.75"><b>進階版（規劃中）</b>・<b class="p">價格未定</b><p>更多存下的查詢、更頻繁的降價檢查、多城市同時比價。<b>尚未開放，也不會收費。</b></p></div>'+
   '<p>喜歡飯省的話，歡迎請我們喝杯咖啡，讓服務繼續免費：</p><a class="btn" target="_blank" rel="noopener" href="'+SPONSOR_URL+'" style="text-decoration:none;text-align:center">☕ 贊助飯省</a>');}
-function help(){return page('💡 說明','<h3>🔍 找飯店</h3><p>輸入城市（中英文都可以）→ 點入住、退房日期 → 馬上看結果。上方可以改人數、預算、排序。</p><h3>🏆 推薦分數怎麼算</h3><p>推薦分數 =（加權評分 − 6）² × 交通便利係數 × 10000 ÷ √每晚價格。</p><ul><li><b>加權評分</b>：依評論數調整，評論越少越往 8.0 靠（評論數 ÷（評論數＋150）的比重用飯店自己的分數），避免只有幾十則評論的高分飯店排第一。評分都是 10 分制（Google 的 5 分制會 ×2）。</li><li><b>交通便利係數</b>：出國多半沒開車，所以看最近的火車／地鐵站步行距離：300 m 內 ×1.15、500 m 內 ×1.10、800 m 內 ×1.0、1.2 km 內 ×0.88、更遠 ×0.78；查不到 ×0.95。離市中心 3 km 內再 +0.05，超過 12 km −0.05。</li><li><b>價格</b>：用平方根，便宜有加分，但不會讓評價差的便宜飯店排到最前面。</li></ul><p>想只看離車站最近的，按「🚇 交通便利」排序。</p><h3>💰 關於價錢</h3><p>每晚含稅參考價（新台幣），來源和查詢時間標在結果上方。主要來源是 Trip.com，抓不到時會自動改用備援來源，再不行會顯示暫存資料，並清楚標示。實際價格以訂房網站為準。</p><h3>🔔 降價通知</h3><p>在結果頁按「存下這個查詢」，並在「降價通知」打開系統通知。每天 09:00 重查，降價 5% 以上就會通知你。</p><h3>🧳 我訂購的飯店</h3><p>加入訂好的飯店（可以貼上確認信自動帶入），會顯示倒數、入住退房時間、設施、地圖，入住前一天和退房當天早上提醒你。</p><h3>📱 加到主畫面</h3><p>iPhone：Safari「分享」→「加入主畫面」。Android：Chrome「⋮」→「安裝應用程式」。</p>');}
+function help(){return page('💡 說明','<h3>🔍 找飯店</h3><p>輸入城市（中英文都可以）→ 點入住、退房日期 → 馬上看結果。上方可以改人數、預算、排序。</p><h3>🏆 推薦分數怎麼算</h3><p>推薦分數 =（加權評分 − 6）² × 交通便利係數 × 10000 ÷ √每晚價格。</p><ul><li><b>加權評分</b>：依評論數調整，評論越少越往 8.0 靠（評論數 ÷（評論數＋150）的比重用飯店自己的分數），避免只有幾十則評論的高分飯店排第一。評分都是 10 分制（Google 的 5 分制會 ×2）。</li><li><b>交通便利係數</b>：出國多半沒開車，所以看最近的火車／地鐵站步行距離：300 m 內 ×1.15、500 m 內 ×1.10、800 m 內 ×1.0、1.2 km 內 ×0.88、更遠 ×0.78；查不到 ×0.95。離市中心 3 km 內再 +0.05，超過 12 km −0.05。</li><li><b>價格</b>：用平方根，便宜有加分，但不會讓評價差的便宜飯店排到最前面。</li></ul><p>想只看離車站最近的，按「🚇 交通便利」排序。</p><h3>💰 關於價錢</h3><p>每晚含稅參考價（新台幣），來源和查詢時間標在結果上方。主要來源是 Trip.com，抓不到時會自動改用備援來源，再不行會顯示暫存資料，並清楚標示。實際價格以訂房網站為準。</p><h3>🔔 降價通知</h3><p>在結果頁按「存下這個查詢」，並在「降價通知」打開系統通知。每天 09:00 重查，降價 5% 以上就會通知你。</p><h3>🧳 我訂購的飯店</h3><p>加入訂好的飯店（可以貼上確認信自動帶入），會顯示倒數、入住退房時間、設施、地圖，入住前一天和退房當天早上提醒你。</p><h3>💾 備份（選用）</h3><p>不用登入。在「我的住宿」按「匯出備份」，會下載一個檔案，裡面有你的住宿和存下的查詢。換手機時按「匯入備份」，已經有的不會重複加進來。沒有備份也不影響找飯店、通知和我的住宿。</p><h3>📱 加到主畫面</h3><p>iPhone：Safari「分享」→「加入主畫面」。Android：Chrome「⋮」→「安裝應用程式」。</p>');}
 function about(){return page('🏨 關於我們／服務說明','<p>飯省 FanSave 是免費的飯店比價資訊服務，幫你用「CP 值」（評分對價格）找到划算的住宿，是飛省 FlySave 的姊妹服務。</p><p>我們不賣房、不代訂、不收款。按「訂房」會前往 Trip.com、Booking.com、Agoda 等網站，訂房與付款都在該網站完成。</p><p>價格隨時會變，訂房網站也可能另加費用，實際金額以訂房頁面為準。</p><p>聯絡我們：'+MAIL+'</p>');}
 function privacy(){return page('🔒 隱私權政策','<p class="note">最後更新：2026 年 10 月 19 日</p>'+
  '<h3>1. 我們是誰</h3><p>飯省 FanSave（以下稱「本服務」）由飛省 FlySave 團隊經營。聯絡方式：'+MAIL+'。</p>'+
- '<h3>2. 我們蒐集哪些資料</h3><ul><li><b>不需要註冊或登入</b>，我們不蒐集姓名、電話、Email、身分證或付款資料。</li><li><b>匿名裝置代碼</b>：第一次使用時在你的瀏覽器隨機產生，用來讓每台裝置只看到自己的資料，不含可識別身分的資訊。</li><li><b>搜尋條件</b>：城市、入住／退房日期、人數、預算。你按「存下這個查詢」時，會和匿名裝置代碼一起存到伺服器。</li><li><b>通知訂閱</b>：開啟系統通知時，瀏覽器會產生一組推播訂閱資訊（推播服務網址與加密金鑰），我們存下它用來傳送通知。</li><li><b>我訂購的飯店</b>：你輸入的飯店名稱、日期、確認號碼、房型、價格、取消期限、電話與貼上的確認信文字，<b>只存在你的裝置</b>（localStorage）。為了入住提醒，只有飯店名稱與入住／退房日期和時間會送到伺服器；為了補上飯店資料，飯店名稱與城市會送到我們的資料中繼服務查詢。確認信全文不會上傳。</li><li><b>技術紀錄</b>：服務供應商可能自動記錄 IP 位址、瀏覽器類型與存取時間，用於安全與除錯。</li></ul>'+
+ '<h3>2. 我們蒐集哪些資料</h3><ul><li><b>不需要註冊或登入</b>，我們不蒐集姓名、電話、Email、身分證或付款資料。</li><li><b>匿名裝置代碼</b>：第一次使用時在你的瀏覽器隨機產生，用來讓每台裝置只看到自己的資料，不含可識別身分的資訊。</li><li><b>搜尋條件</b>：城市、入住／退房日期、人數、預算。你按「存下這個查詢」時，會和匿名裝置代碼一起存到伺服器。</li><li><b>通知訂閱</b>：開啟系統通知時，瀏覽器會產生一組推播訂閱資訊（推播服務網址與加密金鑰），我們存下它用來傳送通知。</li><li><b>我訂購的飯店</b>：你輸入的飯店名稱、日期、確認號碼、房型、價格、取消期限、電話與貼上的確認信文字，<b>只存在你的裝置</b>（localStorage）。為了入住提醒，只有飯店名稱與入住／退房日期和時間會送到伺服器；為了補上飯店資料，飯店名稱與城市會送到我們的資料中繼服務查詢。確認信全文不會上傳。你可以自行把住宿和存下的查詢匯出成檔案保管，這個檔案不會上傳，也不需要登入。</li><li><b>技術紀錄</b>：服務供應商可能自動記錄 IP 位址、瀏覽器類型與存取時間，用於安全與除錯。</li></ul>'+
  '<h3>2-1. 訂房截圖</h3><p>「📷 用截圖新增」的圖片<b>只在你的裝置上辨識</b>（Tesseract.js），不會上傳到我們或任何伺服器，也不會儲存。辨識程式與語言模型會從 jsDelivr 公開 CDN 下載。辨識出的文字只用來填入表單，存檔後與其他住宿資料一樣存在你的裝置（並同步你的住宿提醒）。</p><h3>3. 使用目的</h3><p>只用於提供飯店價格查詢、降價與入住提醒、改善服務。<b>不出售、不出租</b>，也不提供給第三方做行銷，不用於廣告追蹤。</p>'+
  '<h3>4. 處理資料的服務商</h3><ul><li><b>Google（Apps Script）</b>：儲存匿名裝置代碼、存下的查詢、通知訂閱與通知紀錄。</li><li><b>Cloudflare（Workers）</b>：查詢公開飯店價格與飯店資料、傳送推播通知。</li><li><b>瀏覽器推播服務</b>（Google FCM、Apple、Mozilla 等，依你的瀏覽器而定）：遞送系統通知。</li><li><b>GitHub Pages</b>：提供網站本身。</li></ul><p>這些服務商可能在台灣以外的地區處理資料。</p>'+
  '<h3>5. 第三方網站</h3><p>前往姊妹服務<a href="https://luke120513-sys.github.io/flysave/" target="_blank" rel="noopener">飛省 FlySave</a>時，只會用網址帶入目的地、日期與人數，不分享個人資料；兩邊的本機資料各自獨立（fan_／fly_）。價格與飯店資料來自 Trip.com、Google 等公開頁面。點「訂房」、「比價」或「地圖」會前往 Trip.com、Booking.com、Agoda、Google 地圖等網站，這些網站有自己的隱私權政策與 Cookie，請另行參閱。你在那些網站的訂房與付款資料，我們看不到也不會蒐集。</p>'+
- '<h3>6. Cookie 與本機儲存</h3><p>本服務不使用廣告或追蹤 Cookie，只用瀏覽器本機儲存（localStorage、Service Worker 快取）保存你的設定、我訂購的飯店與離線用的網頁檔案。</p>'+
+ '<h3>6. Cookie 與本機儲存</h3><p>本服務不使用廣告或追蹤 Cookie，只用瀏覽器本機儲存（localStorage、Service Worker 快取）保存你的設定、我訂購的飯店與離線用的網頁檔案。「匯出備份」產生的檔案只下載到你的裝置，我們不會收到。</p>'+
  '<h3>7. 付款</h3><p>本服務目前完全免費，不經手任何付款。「贊助」按鈕會前往第三方贊助平台，付款由該平台處理。日後若推出付費方案，會先更新本政策並說明付款服務商。</p>'+
  '<h3>8. 保存期間與刪除</h3><ul><li>存下的查詢：你可以在「我的查詢」隨時刪除；入住日過後不再檢查。</li><li>通知訂閱：在「通知設定」關閉即刪除；推播服務回報失效時也會自動刪除。</li><li>通知紀錄：最多保留最近 30 則，可隨時清除。</li><li>本機資料：清除瀏覽器資料即全部移除。</li></ul><p>也可以來信要求刪除與你的匿名裝置代碼相關的所有資料。</p>'+
  '<h3>9. 你的權利</h3><p>依《個人資料保護法》，你可以請求查詢、閱覽、複製、補充更正、停止處理或刪除你的資料，請來信：'+MAIL+'。</p>'+
@@ -874,7 +1054,7 @@ function render(){
 function sug(v){var b=$('sug');if(!b)return;var t=v.trim().toLowerCase(),L=(t?CITIES.filter(function(c){return c[0].toLowerCase().indexOf(t)>=0||c[1].toLowerCase().indexOf(t)>=0;}):[]).slice(0,7);
   var known=CITIES.some(function(c){return c[0]===v.trim()||c[1].toLowerCase()===t;});
   b.innerHTML=L.map(function(c){return '<div class="sg" data-act="city:'+c[0]+'">📍 '+c[0]+' <small>'+c[1]+'</small></div>';}).join('')+(t&&!known?'<div class="sg" data-act="city:'+esc(v.trim())+'">🔎 搜尋「'+esc(v.trim())+'」</div>':'');b.style.display=b.innerHTML?'block':'none';}
-document.addEventListener('change',function(e){if(e.target.id==='shotin'&&e.target.files&&e.target.files[0])ocrShot(e.target.files[0]);});
+document.addEventListener('change',function(e){if(e.target.id==='shotin'&&e.target.files&&e.target.files[0])ocrShot(e.target.files[0]);if(e.target.id==='bkin'&&e.target.files&&e.target.files[0])importBackupFile(e.target.files[0]);});
 document.addEventListener('input',function(e){if(e.target.id==='dest')sug(e.target.value);if(e.target.id==='nearq'){st.near=e.target.value.trim().slice(0,60);st.geo=null;st.nearOpen=1;saveSt();}});
 document.addEventListener('keydown',function(e){if(e.target.id==='nearq'&&e.key==='Enter'&&st.near){var d=$('dest');var c=d&&d.value.trim();st.sort='dist';if(c)go('city',c);else{st.city='';if(st.ci&&st.ci>today()){runSearch();}else{st.ci=addDays(today(),14);st.co=addDays(st.ci,2);runSearch();}}}});
 document.addEventListener('keydown',function(e){if(e.target.id==='dest'&&e.key==='Enter'&&e.target.value.trim()){go('city',e.target.value.trim());}});
@@ -915,12 +1095,14 @@ document.addEventListener('click',function(e){
   if(k==='sort'){var wasL=st.sort==='lux';st.sort=x;closeSheet(true);saveSt();if(wasL!==(x==='lux')&&R&&!R.example)return runSearch();render();return;}
   if(k==='hd')return hotelSheet(+x);
   if(k==='savq'){var list=(window.VIEW||[]),base=list.reduce(function(m,h){return !m||h.price<m?h.price:m;},0);
-    var q={city:st.city,ci:st.ci,co:st.co,g:st.g,budget:st.budget,notify:true};MYQ.unshift(Object.assign({base:base},q));lss('fs_myq',MYQ);render();
+    var q={city:st.city,ci:st.ci,co:st.co,g:st.g,budget:st.budget,notify:true,id:nid('q')};var row=Object.assign({base:base},q);MYQ.unshift(row);
+    if(!lss('fs_myq',MYQ)){MYQ.shift();render();return;}
+    render();
     post({action:'saveSearch',q:q,base:base,top:list.slice(0,5).map(function(h){return {name:h.name,price:h.price};})}).then(syncFrom).catch(function(){toast('已存在這台裝置（伺服器暫時連不上）');});
     toast(PUSH==='on'?'✅ 已存下，降價會通知你':'✅ 已存下・到「降價通知」打開系統通知');return;}
-  if(k==='qo'){var q2=MYQ[+x];st.city=q2.city;st.ci=q2.ci;st.co=q2.co;st.g=q2.g;st.budget=q2.budget||0;tab='search';return runSearch();}
-  if(k==='qn'){MYQ[+x].notify=MYQ[+x].notify===false;render();post({action:'toggleNotify',i:+x}).then(syncFrom).catch(function(){});return;}
-  if(k==='qd'){if(!confirm('刪除這組查詢？'))return;MYQ.splice(+x,1);lss('fs_myq',MYQ);render();post({action:'delSearch',i:+x}).then(syncFrom).catch(function(){});return;}
+  if(k==='qo'){var qi=qById(x);if(qi<0)return;var q2=MYQ[qi];st.city=q2.city;st.ci=q2.ci;st.co=q2.co;st.g=q2.g;st.budget=q2.budget||0;tab='search';return runSearch();}
+  if(k==='qn'){var qi=qById(x);if(qi<0)return;var qq=MYQ[qi];qq.notify=qq.notify===false;var want=qq.notify!==false;if(!lss('fs_myq',MYQ)){qq.notify=qq.notify===false;render();return;}render();var si=serverIndex(qq);if(si<0){QPEND[qSig(qq)]={notify:want};return;}delete QPEND[qSig(qq)];post({action:'toggleNotify',i:si}).then(syncFrom).catch(function(){QPEND[qSig(qq)]={notify:want};});return;}
+  if(k==='qd'){if(!confirm('刪除這組查詢？'))return;var qi=qById(x);if(qi<0)return;var gone=MYQ[qi],si=serverIndex(gone),sig=qSig(gone);MYQ.splice(qi,1);if(!lss('fs_myq',MYQ)){MYQ.splice(qi,0,gone);render();return;}render();if(si<0){QPEND[sig]={del:1};return;}delete QPEND[sig];post({action:'delSearch',i:si}).then(syncFrom).catch(function(){QPEND[sig]={del:1};});return;}
   if(k==='push'){return x==='on'?pushOn():pushOff();}
   if(k==='ptest'){toast('傳送中…');var tp=function(){return post({action:'testPush'});};
     tp().then(function(j){if(j.ok||j.error!=='尚未開啟通知')return j;return curSub().then(function(sub){if(!sub)throw new Error('這台裝置沒有推播訂閱，請把開關關掉再打開');return saveSub(sub);}).then(tp);})
@@ -942,11 +1124,17 @@ document.addEventListener('click',function(e){
   if(k==='sshot'){closeSheet(true);var fi=$('shotin');if(fi){fi.value='';fi.click();}return;}
   if(k==='booked'){var hb=VIEW[+x];closeSheet(true);return stayForm({name:hb.name,city:st.city,ci:st.ci,co:st.co,g:st.g,price:hb.price*nights(st.ci,st.co),hotelId:hb.hotelId,station:hb.station,stationM:hb.stationM,walkMin:hb.walkMin,area:hb.area},-1);}
   if(k==='se')return stayForm(STAYS[+x],+x);
-  if(k==='sd'){if(!confirm('刪除這筆住宿？'))return;STAYS.splice(+x,1);lss('fs_stays',STAYS);render();syncStays();return;}
+  if(k==='bkout'){exportBackup();return;}
+  if(k==='bkin'){var inf=$('bkin');if(inf){inf.value='';inf.click();}return;}
+  if(k==='sd'){if(!confirm('刪除這筆住宿？'))return;var rm=STAYS[+x];if(!rm)return;STAYS.splice(+x,1);if(!lss('fs_stays',STAYS)){STAYS.splice(+x,0,rm);render();return;}render();syncStays();return;}
   if(k==='sparse'){var o=parseMail($('sf_mail').value||'');var n=0;for(var f in o){var el=$('sf_'+f);if(el&&o[f]){el.value=o[f];n++;}}toast(n?'✨ 帶入 '+n+' 個欄位，請確認':'沒有找到可以帶入的資料');return;}
   if(k==='ssave'){var s={};['name','city','ci','co','cit','cot','conf','room','cancel','phone','addr','guest','note'].forEach(function(f){var e=$('sf_'+f);s[f]=e?(e.value||'').trim():'';});s.g=+$('sf_g').value||2;s.price=+$('sf_price').value||0;
     if(!s.name||!s.ci||!s.co||s.co<=s.ci){toast('請填飯店名稱和正確的入住／退房日期');return;}
-    var i2=+x,bs=i2>=0?STAYS[i2]:(window.PRESTAY||{});if(bs.name===s.name||(bs.plat&&!bs.hotelId))['hotelId','station','stationM','walkMin','area','plat','cur','tgen'].forEach(function(f){if(bs[f]!=null)s[f]=bs[f];});if(i2>=0)STAYS[i2]=s;else STAYS.push(s);lss('fs_stays',STAYS);closeSheet();tab='stays';render();fetchDet(s);setTimeout(syncStays,4000);toast('✅ 已儲存');return;}
+    var i2=+x,bs=i2>=0?STAYS[i2]:(window.PRESTAY||{});if(bs.name===s.name||(bs.plat&&!bs.hotelId))['hotelId','station','stationM','walkMin','area','plat','cur','tgen'].forEach(function(f){if(bs[f]!=null)s[f]=bs[f];});
+    s.id=i2>=0&&isId(STAYS[i2].id)?STAYS[i2].id:(isId(bs.id)?bs.id:nid('s'));
+    var prevStay=i2>=0?STAYS[i2]:null;if(i2>=0)STAYS[i2]=s;else STAYS.push(s);
+    if(!lss('fs_stays',STAYS)){if(i2>=0)STAYS[i2]=prevStay;else STAYS.pop();showStoreWarn();return;}
+    closeSheet();tab='stays';render();fetchDet(s);setTimeout(syncStays,4000);toast('✅ 已儲存');return;}
 });
 function annSheet(j){var an=j!=null?ANN[j]:(annUnread()[0]||ANN[0]);if(!an){toast('目前沒有公告');return;}AI=ANN.indexOf(an);var sn=annSeen();ANN.forEach(function(o){var k=o.id||o.title;if(sn.indexOf(k)<0)sn.push(k);});lss('fs_annseen',sn);annRender();sheet('<h2>'+esc(an.title)+'</h2><p style="line-height:1.7">'+esc(an.body||'')+'</p>'+(an.link?'<a class="btn" href="'+esc(an.link)+'" style="text-decoration:none;text-align:center">查看</a>':'')+(ANN.length>1?'<p class="note" style="margin-top:14px">其他公告</p><div class="lk">'+ANN.map(function(o,i){return i===AI?'':'<button data-act="anni:'+i+'">'+esc(o.title)+'</button>';}).join('')+'</div>':''));}
 document.addEventListener('pointerdown',function(e){if(e.target.closest&&e.target.closest('#annbar')){APAUSE=true;clearTimeout(annNext.t);annNext.t=setTimeout(function(){APAUSE=false;},6000);}});
