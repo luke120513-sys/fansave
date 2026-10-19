@@ -258,7 +258,7 @@ html.dark header{background:#3A1D10}
 .xsw a.on{background:var(--xsw-on,#fff);color:var(--g);box-shadow:0 1px 2px rgba(0,0,0,.1)}
 #xsw-fly:not(.on):active{color:#388153}#xsw-trip:not(.on):active{color:#2F5D8A}
 html.dark .xsw{--xsw-bg:#2A1F18;--xsw-tx:#B3A190;--xsw-on:#3A2C23}html.dark .xsw a.on{color:#FF9A5C}
-.ico{display:inline-block;vertical-align:-3px;flex:none}.xsw .ico{margin-right:4px;vertical-align:-4px}.xsw a .xi{display:inline-flex}.tbtn{display:inline-flex;align-items:center;gap:4px;border:1.5px solid #2F5D8A;color:#2F5D8A;background:transparent;border-radius:16px;font:inherit;font-size:12.5px;font-weight:800;padding:5px 10px;cursor:pointer;white-space:nowrap}html.dark .tbtn{border-color:#5B8DBF;color:#A9C8E6}
+.ico{display:inline-block;vertical-align:-3px;flex:none}.xsw .ico{margin-right:4px;vertical-align:-4px}.xsw a .xi{display:inline-flex}.tbtn.done{background:#EAF1F8}html.dark .tbtn.done{background:#1A2330}.chips .tbtn{height:34px;margin:0 6px 6px 0}.tbtn{display:inline-flex;align-items:center;gap:4px;border:1.5px solid #2F5D8A;color:#2F5D8A;background:transparent;border-radius:16px;font:inherit;font-size:12.5px;font-weight:800;padding:5px 10px;cursor:pointer;white-space:nowrap}html.dark .tbtn{border-color:#5B8DBF;color:#A9C8E6}
 .toast a{color:#A9C8E6;font-weight:800;margin-left:8px;white-space:nowrap}#toast:has(a){white-space:nowrap}html.dark .toast a{color:#2F5D8A}
 html.dark #annn,html.dark #nfyn{border-color:#3A1D10}
 html.dark #nfybell{background:#2A211B}html.dark #nfybell svg{fill:#F0875A;stroke:#F0875A}
@@ -420,7 +420,7 @@ function siteFoot(){var ctx=st.city&&st.ci&&st.co&&(tab==='search'&&st.step==='r
   var r1=rb('coffee','贊助','href="'+SPONSOR_URL+'" target="_blank" rel="noopener"')+rb('share','分享','data-act="share"')+(SOC.ig?rb('ig','IG','href="'+SOC.ig+'" target="_blank" rel="noopener"'):'')+(SOC.threads?rb('threads','Threads','href="'+SOC.threads+'" target="_blank" rel="noopener"'):'');
   var r3='<a class="sis sis-fly" href="'+esc(fu)+'" target="_blank" rel="noopener"><img alt="" aria-hidden="true" src="'+ICO['fly@fly']+'">飛省 查機票</a><a class="sis sis-trip" href="'+esc(tu)+'" target="_blank" rel="noopener"><img alt="" aria-hidden="true" src="'+ICO['suitcase@trip']+'">旅伴 規劃行程</a>';
   return '<footer class="xft"><div class="xr1">'+r1+'</div><div class="xr2"><a href="#" data-act="go:about">關於我們</a><i>|</i><a href="#" data-act="go:privacy">隱私權政策</a><i>|</i><a href="#" data-act="go:terms">服務條款</a><i>|</i><a href="mailto:'+CONTACT+'?subject='+encodeURIComponent('飯省 聯絡')+'">聯絡我們</a></div><div class="xr3">'+r3+'</div><div class="xvw" id="fsviews"'+(viewsTxt()?'':' hidden')+'>'+viewsTxt()+'</div><div class="xcp">© 2026 飯省 FanSave・價格以新台幣（TWD）顯示・'+VER+'</div></footer>';}
-var CONTACT='aicode1911@gmail.com', SPONSOR_URL='https://portaly.cc/dreamworld369/support', VER='v2.8.5'; var MAIL='<a href="mailto:'+CONTACT+'" style="color:var(--accent,#C2410C);text-decoration:underline;font-weight:600">'+CONTACT+'</a>';
+var CONTACT='aicode1911@gmail.com', SPONSOR_URL='https://portaly.cc/dreamworld369/support', VER='v2.8.6'; var MAIL='<a href="mailto:'+CONTACT+'" style="color:var(--accent,#C2410C);text-decoration:underline;font-weight:600">'+CONTACT+'</a>';
 function $(i){return document.getElementById(i);}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function lsg(k,d){k=k.replace(/^fs_/,'fan_');try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
@@ -663,7 +663,7 @@ function stays(){
      mapBox(s.name,d.address||s.area||s.city||'',s.station||d.station,s.stationM!=null?s.stationM:d.stationM,s.walkMin||d.walkMin)+
      (am.length?'<div class="am">'+am.map(function(a){return '<span>'+a+'</span>';}).join('')+'</div>':'')+
      (d.loading?'<p class="note">⏳ 正在補上飯店資料…</p>':d.sources&&!d.checkin&&!s.cit?'<p class="note">查不到入住時間，可以按「編輯」自己填。</p>':'')+
-     '<div class="chips" style="margin-top:8px"><a class="chip" style="text-decoration:none;display:inline-flex;align-items:center" target="_blank" rel="noopener" href="'+esc(flyUrl(s))+'">✈️ 查機票</a>'+chip('✏️ 編輯','se:'+i)+chip('刪除','sd:'+i).replace('class="chip"','class="chip mfdel"')+'</div></div>';}).join('');
+     '<div class="chips" style="margin-top:8px"><a class="chip" style="text-decoration:none;display:inline-flex;align-items:center" target="_blank" rel="noopener" href="'+esc(flyUrl(s))+'">✈️ 查機票</a>'+(past?'':'<button class="tbtn'+(tripAdded(s.name,s.ci)?' done':'')+'" data-act="staytrip:'+i+'">'+ic('suitcase@trip',16)+(tripAdded(s.name,s.ci)?' 已加入行程 ✓':' 加入行程')+'</button>')+chip('✏️ 編輯','se:'+i)+chip('刪除','sd:'+i).replace('class="chip"','class="chip mfdel"')+'</div></div>';}).join('');
 }
 function stayForm(s,i){s=s||{g:2};window.PRESTAY=s;
   sheet('<h2>'+(i>=0?'編輯':'加入')+'訂購的飯店</h2><label class="fld">📩 貼上訂房確認信（選填，自動帶入）<textarea id="sf_mail" placeholder="把確認信的文字整段貼上"></textarea></label><button class="btn ghost" data-act="sparse" style="margin:0 0 12px">✨ 自動帶入</button>'+
@@ -766,10 +766,21 @@ function curTrip(){try{var t=JSON.parse(localStorage.getItem('shared_curTrip')||
 function addToTrip(type,data){var k='shared_tripInbox',a;try{a=JSON.parse(localStorage.getItem(k)||'[]');if(!Array.isArray(a))a=[];}catch(e){a=[];}
   a.push({type:type,tripId:(curTrip()||{}).id,data:data,addedAt:Date.now()});localStorage.setItem(k,JSON.stringify(a));}
 function hotelToTrip(x){var nn=nights(st.ci,st.co),d={name:x.name,checkin:st.ci,checkout:st.co,price:Math.round(x.price*nn),link:bookUrl(x)};if(x.lat&&x.lng){d.lat=Math.round(x.lat*1e5)/1e5;d.lng=Math.round(x.lng*1e5)/1e5;}
-  if(!/^(https?:\/\/|\/)/.test(d.link||''))delete d.link;addToTrip('hotel',d);
-  var t=curTrip();toastH(ic('suitcase@trip',18)+' 已加入旅伴行程'+(t&&t.city?'（'+esc(t.city)+'）':'')+'<a href="'+esc(tripAddUrl(d,t))+'">查看 ›</a>');}
+  sendTrip(d,st.city);}
+function sendTrip(d,city){if(!/^(https?:\/\/|\/)/.test(d.link||''))delete d.link;addToTrip('hotel',d);
+  var A=lsg('fan_tripadded',[]),key=d.name+'|'+d.checkin;if(A.indexOf(key)<0){A.push(key);lss('fan_tripadded',A.slice(-200));}
+  var t=curTrip();toastH(ic('suitcase@trip',18)+' 已加入旅伴行程'+(t&&t.city?'（'+esc(t.city)+'）':'')+'<a href="'+esc(tripAddUrl(d,t,city))+'">查看 ›</a>');if(tab==='stays')render();}
+function tripAdded(name,ci){return lsg('fan_tripadded',[]).indexOf(name+'|'+ci)>=0;}
+/* 我的住宿 → 旅伴：價格只有新台幣才帶（外幣不換算，不估算）；DET 有 hotelId 就帶 Trip.com 飯店頁、座標 */
+function stayToTrip(i){var s=STAYS[+i];if(!s)return;var D=DET[s.name]||{},d={name:s.name,checkin:s.ci,checkout:s.co};
+  var cit=(s.tgen&&D.checkin)||s.cit||D.checkin||'',cot=(s.tgen&&D.checkout)||s.cot||D.checkout||'',hm=function(x){var m=String(x).match(/\b(\d{1,2}):(\d\d)\b/);return m?('0'+m[1]).slice(-2)+':'+m[2]:'';};
+  if(hm(cit))d.checkinTime=hm(cit);if(hm(cot))d.checkoutTime=hm(cot);
+  if(s.price>0&&(!s.cur||s.cur==='TWD'))d.price=Math.round(+s.price);
+  if(D.hotelId)d.link='https://tw.trip.com/hotels/detail/?hotelId='+D.hotelId+'&checkIn='+s.ci+'&checkOut='+s.co+'&adult='+(s.g||2)+'&curr=TWD';
+  if(D.lat&&D.lng){d.lat=Math.round(D.lat*1e5)/1e5;d.lng=Math.round(D.lng*1e5)/1e5;}if(s.city)d.city=s.city;
+  sendTrip(d,s.city||'');}
 /* iPhone 主畫面 App 與 Safari 的 localStorage 不共用 → 另用網址 add= 帶過去（trip-add-param-request.md），inbox 照寫 */
-function tripAddUrl(d,t){var o={v:1,type:'hotel',data:d};if(t&&t.id)o.tripId=t.id;var c=String(st.city||'').trim(),k=c.toLowerCase(),dest=/^[A-Z]{3}$/.test(c)?c:C2I[k]||C2I[ZH2EN[c]||'']||c;
+function tripAddUrl(d,t,city){var o={v:1,type:'hotel',data:d};if(t&&t.id)o.tripId=t.id;var c=String(city==null?st.city:city||'').trim(),k=c.toLowerCase(),dest=/^[A-Z]{3}$/.test(c)?c:C2I[k]||C2I[ZH2EN[c]||'']||c;
   return '/trip/?from=fansave&add='+encodeURIComponent(JSON.stringify(o))+(dest?'&dest='+encodeURIComponent(dest):'')+'&dep='+d.checkin+'&ret='+d.checkout;}
 function toastH(h){var e=$('toast');e.innerHTML=h;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on');},3500);}
 function xswLinks(){var t=curTrip(),f=$('xsw-fly'),tr=$('xsw-trip');if(!f)return;[['xsw-fly','fly@fly'],['xsw-fan','hotel'],['xsw-trip','suitcase@trip']].forEach(function(a){var x=document.querySelector('#'+a[0]+' .xi');if(x&&!x.dataset.i){x.dataset.i=1;x.innerHTML=ic(a[1],18);}});
@@ -872,6 +883,7 @@ document.addEventListener('click',function(e){
   if(k==='nearx'){st.near='';st.geo=null;if(st.sort==='dist')st.sort='pop';saveSt();render();return;}
   if(k==='rv')return revSheet(+x);
   if(k==='share')return shareSite();
+  if(k==='staytrip')return stayToTrip(x);
   if(k==='addtrip'){var hx=VIEW[+x];if(hx)hotelToTrip(hx);return;}
   if(k==='tab'){tab=x;if(x==='search'&&!R)st.step=st.city?'cal':'dest';render();return;}
   if(k==='go'){tab=x;closeSheet(true);render();return;}
