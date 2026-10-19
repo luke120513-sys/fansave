@@ -1,5 +1,5 @@
 // 飯省 service worker：頁面 network-first（離線才用快取，避免舊版或壞掉的快取讓 App 打不開）；靜態檔 cache-first；API 一律走網路。
-const C='fansave-v1792376970', SHELL=['./','index.html','data.js','manifest.json','icons/icon-192.png','icons/favicon-32.png','icons/apple-touch-icon.png'];
+const C='fansave-v1792377248', SHELL=['./','index.html','data.js','manifest.json','icons/icon-192.png','icons/favicon-32.png','icons/apple-touch-icon.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>Promise.all(SHELL.map(u=>c.add(u).catch(()=>{})))));self.skipWaiting();});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('fansave-v')&&k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',e=>{
