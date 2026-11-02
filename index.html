@@ -383,7 +383,7 @@ html.dark .back,html.dark .chip{color:#F5A27A;border-color:#E07A4A}html.dark .ch
 <script>
 var API='https://script.google.com/macros/s/AKfycbwh8DsqFRmJPOvblQ3tvegty3kELnV_L1cQE102NoZfBZIf3OR4Jaw_Y0B2BeqI15uh/exec'; // 部署時 deploy.sh 會填入
 var RELAY='https://fansave-api.luke120513.workers.dev';
-var SPONSOR_URL='https://portaly.cc/dreamworld369/support',SITE_URL='https://luke120513-sys.github.io/fansave/',FLY_URL='https://luke120513-sys.github.io/flysave/';
+var SPONSOR_URL='https://nursing-exam-app.pages.dev/donate.html?from=fansave',SITE_URL='https://luke120513-sys.github.io/fansave/',FLY_URL='https://luke120513-sys.github.io/flysave/';
 function pbV(n){var o=[];while(true){var b=n&127;n=Math.floor(n/128);if(n)o.push(b|128);else{o.push(b);return o;}}}
 function pbI(no,n){return pbV(no<<3).concat(pbV(n));}function pbF(no,a){return pbV(no<<3|2).concat(pbV(a.length),a);}
 function gTs(ci,co){var d=function(x){var a=x.split('-').map(Number);return pbI(1,a[0]).concat(pbI(2,a[1]),pbI(3,a[2]));},n=nights(ci,co),dates=pbF(1,d(ci)).concat(pbF(2,d(co)),pbI(3,n)),cur=[84,87,68];
@@ -420,7 +420,7 @@ function siteFoot(){var ctx=st.city&&st.ci&&st.co&&(tab==='search'&&st.step==='r
   var r1=rb('coffee','贊助','href="'+SPONSOR_URL+'" target="_blank" rel="noopener"')+rb('share','分享','data-act="share"')+(SOC.ig?rb('ig','IG','href="'+SOC.ig+'" target="_blank" rel="noopener"'):'')+(SOC.threads?rb('threads','Threads','href="'+SOC.threads+'" target="_blank" rel="noopener"'):'');
   var r3='<a class="sis sis-fly" href="'+esc(fu)+'" target="_blank" rel="noopener"><img alt="" aria-hidden="true" src="'+ICO['fly@fly']+'">飛省 查機票</a><a class="sis sis-trip" href="'+esc(tu)+'" target="_blank" rel="noopener"><img alt="" aria-hidden="true" src="'+ICO['suitcase@trip']+'">旅伴 規劃行程</a>';
   return '<footer class="xft"><div class="xr1">'+r1+'</div><div class="xr2"><a href="#" data-act="go:about">關於我們</a><i>|</i><a href="#" data-act="go:privacy">隱私權政策</a><i>|</i><a href="#" data-act="go:terms">服務條款</a><i>|</i><a href="mailto:'+CONTACT+'?subject='+encodeURIComponent('飯省 聯絡')+'">聯絡我們</a></div><div class="xr3">'+r3+'</div><div class="xvw" id="fsviews"'+(viewsTxt()?'':' hidden')+'>'+viewsTxt()+'</div><div class="xcp">© 2026 飯省 FanSave・價格以新台幣（TWD）顯示・'+VER+'</div></footer>';}
-var CONTACT='aicode1911@gmail.com', SPONSOR_URL='https://portaly.cc/dreamworld369/support', VER='v2.9.0'; var MAIL='<a href="mailto:'+CONTACT+'" style="color:var(--accent,#C2410C);text-decoration:underline;font-weight:600">'+CONTACT+'</a>';
+var CONTACT='aicode1911@gmail.com', SPONSOR_URL='https://nursing-exam-app.pages.dev/donate.html?from=fansave', VER='v2.9.0'; var MAIL='<a href="mailto:'+CONTACT+'" style="color:var(--accent,#C2410C);text-decoration:underline;font-weight:600">'+CONTACT+'</a>';
 function $(i){return document.getElementById(i);}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function lsg(k,d){k=k.replace(/^fs_/,'fan_');try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
